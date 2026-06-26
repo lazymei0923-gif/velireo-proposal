@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velireo Skin｜電商平臺功能提案</title>
+
+<!--
+  ============================================================
+  Velireo Skin 電商平臺功能提案 ・ 14 頁簡報
+  視覺規範：Bright Premium 暖瓷白（#FFFDF9 / #C9817A / Noto Serif TC）
+  操作：→/Space 下一頁、← 上一頁、滾輪翻頁、點擊右半下一頁/左半上一頁、
+        F 全螢幕、D 塗鴉、P 筆 H 螢光筆 R 方框、C 清除、🔒 鎖定防誤觸
+  ------------------------------------------------------------
+  ▶ DEMO 影片置換方式：
+    找到 .vslot（共 8 個，data-module 標示模組名），
+    整塊換成 <video class="vfill" controls src="影片路徑.mp4" poster="封面.jpg"></video>
+    或把錄好的影片放進 .vslot 內即可（已固定 16:9）。
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#FFFDF9; --bg2:#EFEAE0; --cream:#D8C5B5;
+  --ink:#2B2B2B; --soft:#6B625C; --cta:#C9817A;
+  --surface:#FFFFFF; --line:rgba(43,43,43,.10); --line2:rgba(43,43,43,.18);
+  --cta-soft:rgba(201,129,122,.12); --cta-soft2:rgba(201,129,122,.22);
+  --serif:"Noto Serif TC",serif; --sans:"Noto Sans TC","Inter",system-ui,sans-serif; --eng:"Cormorant Garamond",serif;
+  --r:18px;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{
+  font-family:var(--sans); color:var(--ink); background:var(--bg);
+  overflow:hidden; -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- slide system ---------- */
+.deck{ position:fixed; inset:0; }
+.slide{
+  position:fixed; inset:0; display:flex; align-items:stretch; justify-content:center;
+  padding:52px 92px 56px; opacity:0; visibility:hidden;
+  transition:opacity .45s ease; background:var(--bg);
+}
+.slide.active{ opacity:1; visibility:visible; }
+.slide::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(1100px 560px at 82% -10%, rgba(201,129,122,.10), transparent 60%),
+    radial-gradient(900px 520px at -8% 112%, rgba(216,197,181,.20), transparent 56%);
+}
+.inner{ position:relative; width:100%; max-width:1200px; z-index:2; display:flex; flex-direction:column; }
+/* header (1st child) pinned top; content block (2nd..last) centered in remaining space */
+.inner > :nth-child(2){ margin-top:auto; }
+.inner > :last-child{ margin-bottom:auto; }
+.inner.closing{ justify-content:center; }
+.inner.closing > :nth-child(2){ margin-top:0; }
+.inner.closing > :last-child{ margin-bottom:0; }
+
+/* reveal */
+@keyframes rise{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:none;} }
+.slide.active .inner > *{ animation:rise .55s both; }
+.slide.active .inner > *:nth-child(1){ animation-delay:.02s; }
+.slide.active .inner > *:nth-child(2){ animation-delay:.10s; }
+.slide.active .inner > *:nth-child(3){ animation-delay:.18s; }
+.slide.active .inner > *:nth-child(4){ animation-delay:.26s; }
+
+/* ---------- typography ---------- */
+.kicker{
+  font-family:var(--sans); font-size:14px; font-weight:600; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--cta); margin-bottom:16px;
+}
+.slide-title{ font-family:var(--serif); font-weight:700; font-size:clamp(27px,2.8vw,38px); line-height:1.2; color:var(--ink); }
+.slide-sub{ font-size:clamp(17px,1.35vw,21px); line-height:1.65; color:var(--soft); margin-top:14px; max-width:880px; }
+
+/* ---------- top / bottom bars ---------- */
+.topbar{ position:fixed; top:30px; left:88px; right:88px; z-index:60; display:flex; justify-content:space-between; align-items:center; }
+.wordmark{ display:flex; align-items:center; gap:11px; font-size:15px; font-weight:500; letter-spacing:.30em; color:var(--ink); }
+.wm-dot{ width:9px; height:9px; border-radius:50%; background:var(--cta); display:inline-block; }
+.topbar-tag{ font-size:14px; letter-spacing:.04em; color:var(--soft); }
+
+.botbar{ position:fixed; left:88px; bottom:34px; z-index:60; display:flex; align-items:center; gap:16px; }
+.dots{ display:flex; gap:7px; align-items:center; }
+.dot{ width:9px; height:9px; border-radius:50%; background:var(--line2); cursor:pointer; transition:.22s; border:none; padding:0; }
+.dot:hover{ background:var(--cta-soft2); }
+.dot.on{ background:var(--cta); width:24px; border-radius:6px; }
+.pageno{ font-size:14px; letter-spacing:.12em; color:var(--soft); font-variant-numeric:tabular-nums; }
+
+.hint{ position:fixed; left:50%; bottom:34px; transform:translateX(-50%); z-index:55; font-size:13px; color:var(--soft); opacity:.62; letter-spacing:.04em; }
+
+/* ---------- cover ---------- */
+.cover .kicker{ font-size:15px; }
+.cover-title{ font-family:var(--serif); font-weight:700; font-size:clamp(42px,4.6vw,62px); line-height:1.18; color:var(--ink); letter-spacing:.01em; }
+.cover-sub{ font-size:clamp(18px,1.6vw,24px); color:var(--soft); line-height:1.6; margin-top:22px; max-width:760px; }
+.cover-rule{ width:72px; height:3px; background:var(--cta); border-radius:3px; margin:34px 0 30px; }
+.cover-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:14px 26px; }
+.cover-meta span{ font-size:16px; color:var(--ink); }
+.cover-meta .sep{ width:5px; height:5px; border-radius:50%; background:var(--cream); }
+.cover-pill{ display:inline-flex; align-items:center; gap:8px; margin-top:30px; font-size:16px; font-weight:600;
+  color:var(--cta); background:var(--cta-soft); border:1px solid var(--cta-soft2); padding:11px 20px; border-radius:999px; }
+.cover-pill b{ font-family:var(--serif); font-size:20px; }
+/* cover 2-col + image slot */
+.cover-grid{ display:grid; grid-template-columns:1.12fr .88fr; gap:64px; align-items:center; }
+.cover-img{ display:flex; justify-content:center; }
+.cover-img .imgslot{ height:clamp(340px,58vh,500px); aspect-ratio:4/5; }
+/* full-bleed photo cover */
+.slide-cover{ padding:0; }
+.cover-full{ position:absolute; inset:0; overflow:hidden; }
+.cover-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:62% center; }
+.cover-veil{ position:absolute; inset:0; background:linear-gradient(95deg, #FFFDF9 0%, #FFFDF9 30%, rgba(255,253,249,.97) 43%, rgba(255,253,249,.55) 55%, rgba(255,253,249,0) 68%); }
+.cover-panel{ position:absolute; left:84px; top:50%; transform:translateY(-50%); width:min(540px,46%); }
+.cover-panel .cover-title{ font-size:clamp(36px,3.6vw,52px); line-height:1.16; }
+.cover-panel .cover-sub{ margin-top:14px; font-size:clamp(16px,1.25vw,19px); max-width:460px; }
+.cover-panel .cover-pill{ margin-top:22px; }
+.cover-stats{ margin-top:26px; display:flex; flex-direction:column; gap:10px; }
+.cstat{ font-family:var(--eng); font-size:24px; font-weight:600; color:var(--ink); letter-spacing:.015em; line-height:1.15; }
+.cstat.tagline{ margin-top:8px; font-family:var(--sans); font-size:14px; font-weight:600; color:var(--cta); letter-spacing:.16em; text-transform:uppercase; }
+body.on-cover .topbar, body.on-cover .hint, body.on-cover .botbar{ opacity:0; pointer-events:none; }
+/* 共用圖片置換槽 */
+.imgslot{ position:relative; border-radius:24px; overflow:hidden;
+  background:linear-gradient(158deg,#FFFFFF 0%,#F1E9DF 68%,#E7DACC 100%);
+  border:1.5px dashed rgba(201,129,122,.45);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  box-shadow:0 40px 80px -36px rgba(43,43,43,.42); }
+.imgslot .ifill{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.imgslot .ico{ width:60px; height:60px; border-radius:50%; background:var(--cta-soft2); color:var(--cta); display:grid; place-items:center; font-size:26px; }
+.imgslot .cap{ font-family:var(--serif); font-size:17px; font-weight:600; color:var(--ink); }
+.imgslot .note{ font-size:13px; color:var(--soft); }
+
+/* ---------- goals / diff cards ---------- */
+.head-block{ margin-bottom:26px; }
+.cards-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:30px 30px 32px;
+  box-shadow:0 30px 60px -42px rgba(43,43,43,.4); }
+.card .num{ font-family:var(--eng); font-size:34px; color:var(--cta); font-weight:600; line-height:1; }
+.card h3{ font-family:var(--serif); font-size:23px; font-weight:700; color:var(--ink); margin:16px 0 10px; }
+.card p{ font-size:17px; line-height:1.7; color:var(--soft); }
+/* goals 左圖右卡 */
+.goals-grid{ display:grid; grid-template-columns:1.12fr 1fr; gap:40px; align-items:center; }
+.goals-vid{ width:100%; aspect-ratio:3838 / 1786; border-radius:18px; overflow:hidden; background:#000; box-shadow:0 30px 64px -40px rgba(43,43,43,.45); }
+.goals-vid video{ width:100%; height:100%; object-fit:cover; display:block; }
+.goals-img{ display:flex; }
+.goals-img .imgslot{ width:100%; min-height:380px; }
+.goals-cards{ display:flex; flex-direction:column; gap:16px; justify-content:center; }
+.card.row{ display:flex; gap:20px; align-items:flex-start; padding:22px 26px; }
+.card.row .num{ font-size:30px; }
+.card.row h3{ margin:0 0 6px; font-size:21px; }
+.card.row p{ font-size:16px; line-height:1.6; }
+.core-bar{ margin-top:26px; background:var(--cta-soft); border-left:4px solid var(--cta); border-radius:12px;
+  padding:20px 26px; font-size:19px; font-weight:600; color:var(--ink); line-height:1.55; }
+
+/* diff cards (2x2) */
+.cards-2{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+.dcard{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:22px 30px;
+  box-shadow:0 30px 60px -44px rgba(43,43,43,.4); }
+.dcard .tag{ display:inline-block; font-size:14px; font-weight:600; color:#a85f58; background:rgba(201,129,122,.10);
+  padding:5px 12px; border-radius:999px; margin-bottom:14px; }
+.dcard h3{ font-family:var(--serif); font-size:21px; font-weight:700; color:var(--ink); }
+.dcard .sol{ font-size:17px; line-height:1.65; color:var(--soft); margin-top:12px; padding-top:12px; border-top:1px dashed var(--line2); }
+.dcard .sol b{ color:var(--cta); }
+
+/* ---------- module (demo) slide ---------- */
+.mod-head{ margin-bottom:26px; }
+.mod-grid{ display:grid; grid-template-columns:.8fr 1.2fr; gap:60px; align-items:center; }
+.mod-feats{ display:flex; flex-direction:column; }
+.ft{ position:relative; padding:15px 0 15px 24px; border-bottom:1px solid var(--line); }
+.ft:last-child{ border-bottom:none; }
+.ft::before{ content:'✦'; position:absolute; left:0; top:13px; font-size:13px; color:var(--cta); }
+.ft b{ font-size:17px; font-weight:700; color:var(--ink); }
+.ft span{ font-size:16px; line-height:1.55; color:var(--soft); }
+
+.mod-video{ }
+.demo-badge{ display:inline-flex; align-items:center; gap:7px; font-size:14px; font-weight:600; color:var(--cta);
+  background:var(--cta-soft); border:1px solid var(--cta-soft2); padding:8px 15px; border-radius:999px; margin-bottom:16px; }
+.vslot{ position:relative; width:100%; aspect-ratio:16/9; border-radius:20px; overflow:hidden;
+  background:linear-gradient(158deg,#FFFFFF 0%,#F3ECE2 60%,#EFEAE0 100%);
+  border:1.5px dashed rgba(201,129,122,.5);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:13px;
+  box-shadow:0 34px 70px -34px rgba(43,43,43,.45); }
+.vslot .vfill{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.vslot-play{ width:64px; height:64px; border-radius:50%; background:var(--cta); color:#fff; display:grid; place-items:center;
+  font-size:24px; padding-left:5px; box-shadow:0 12px 28px -6px rgba(201,129,122,.65); }
+.vslot-cap{ font-family:var(--serif); font-size:18px; font-weight:600; color:var(--ink); }
+.vslot-note{ font-size:14px; color:var(--soft); }
+.mod-foot{ margin-top:14px; font-size:14px; color:var(--soft); }
+
+/* ---------- map slide (lanes / index) ---------- */
+.mapx{ margin-top:2px; border:1px solid var(--line); border-radius:20px; overflow:hidden;
+  background:var(--surface); box-shadow:0 32px 66px -46px rgba(43,43,43,.42); }
+.lane{ display:grid; grid-template-columns:178px 1fr; align-items:center; gap:22px; padding:9px 28px; }
+.lane + .lane{ border-top:1px solid var(--line); }
+.lane:nth-child(even){ background:#FCF8F1; }
+.lane-cat{ display:flex; align-items:center; gap:12px; }
+.lane-meta{ display:flex; flex-direction:column; gap:2px; }
+.lane-name{ font-family:var(--serif); font-size:18px; font-weight:700; color:var(--ink); line-height:1.2; }
+.lane-count{ font-size:12px; color:var(--soft); }
+.lane .ovx-ico{ width:48px; height:48px; border-radius:14px; }
+.lane .ovx-ico svg{ width:24px; height:24px; }
+.lane-tiles{ display:flex; flex-wrap:wrap; gap:13px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; font-size:15px; line-height:1; padding:9px 14px; border-radius:11px; background:#FFFFFF; border:1px solid rgba(43,43,43,.12); color:var(--ink); white-space:nowrap; }
+.chip::before{ content:'\203A'; color:var(--soft); font-size:15px; font-weight:700; }
+/* overview (p12) has spare room — loosen its lanes (map p3 stays tight for 6 rows) */
+.slide-overview .lane{ padding:17px 30px; }
+.slide-overview .lane-tiles{ gap:16px; }
+.slide-overview .chip{ padding:11px 17px; }
+.chip.demo{ background:rgba(201,129,122,.07); color:#a85f58; font-weight:600; border-color:var(--cta-soft2); }
+.chip.demo::before{ content:'\203A'; color:#a85f58; }
+.map-note{ margin-top:15px; font-size:15px; color:var(--soft); }
+.map-note .dm{ color:#a85f58; font-weight:600; }
+
+/* ---------- overview slide (bento) ---------- */
+.ovx{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; align-items:start; }
+.ovx-cell{ background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:16px 20px;
+  box-shadow:0 28px 54px -46px rgba(43,43,43,.4); }
+.ovx-cell.wide{ grid-column:1 / -1; }
+.ovx-head{ display:flex; align-items:center; gap:11px; margin-bottom:11px; }
+.ovx-ico{ width:36px; height:36px; border-radius:11px; background:var(--cta-soft); color:var(--cta); display:grid; place-items:center; flex:none; }
+.ovx-title{ font-family:var(--serif); font-size:18px; font-weight:700; color:var(--ink); }
+.ovx-count{ margin-left:auto; font-size:12px; color:var(--soft); background:var(--bg2); padding:4px 10px; border-radius:999px; white-space:nowrap; }
+.ovx-tiles{ display:grid; grid-template-columns:repeat(2,1fr); gap:7px; }
+.ovx-tiles.cols4{ grid-template-columns:repeat(4,1fr); }
+.ovx-tile{ display:flex; align-items:center; gap:9px; padding:8px 12px; border-radius:10px; background:var(--bg2); font-size:15px; color:var(--ink); }
+.ovx-tile::before{ content:'✦'; color:var(--cta); font-size:10px; flex:none; }
+
+/* ---------- process slide ---------- */
+.flow{ display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-top:10px; position:relative; }
+.flow::before{ content:''; position:absolute; left:6%; right:6%; top:34px; height:2px; background:linear-gradient(90deg,var(--cream),var(--cta)); opacity:.5; }
+.step{ position:relative; text-align:center; }
+.step .bub{ width:68px; height:68px; margin:0 auto 16px; border-radius:50%; background:var(--surface); border:2px solid var(--cta);
+  display:grid; place-items:center; font-family:var(--eng); font-size:26px; font-weight:600; color:var(--cta);
+  box-shadow:0 14px 30px -14px rgba(201,129,122,.55); position:relative; z-index:2; }
+.step h4{ font-family:var(--serif); font-size:19px; font-weight:700; color:var(--ink); }
+.timebar{ margin-top:46px; display:flex; align-items:center; gap:16px; background:var(--cta-soft);
+  border:1px solid var(--cta-soft2); border-radius:14px; padding:22px 28px; }
+.timebar .lab{ font-family:var(--eng); font-size:34px; font-weight:600; color:var(--cta); white-space:nowrap; }
+.timebar .txt{ font-size:18px; line-height:1.6; color:var(--ink); }
+.proc-note{ margin-top:18px; text-align:center; font-size:16px; color:var(--soft); }
+
+/* mod value headline / closing line */
+.mod-headline{ font-size:clamp(27px,2.8vw,38px); line-height:1.32; max-width:1040px; }
+.mod-close{ margin-top:16px; padding-top:14px; border-top:1px solid var(--line); font-size:15px; font-weight:600; color:var(--cta); }
+.vslot-play svg{ width:28px; height:28px; }
+/* portrait (phone) demo video */
+.mod-video.is-portrait{ display:flex; flex-direction:column; align-items:center; width:100%; }
+.vslot.vslot-portrait{ width:auto; height:min(440px,56vh); aspect-ratio:600/1300; box-shadow:0 30px 64px -28px rgba(43,43,43,.5); }
+.phone-row{ display:flex; justify-content:center; align-items:flex-end; gap:16px; width:100%; }
+.phone-row .vslot.vslot-portrait{ width:calc((100% - 32px)/3); max-width:188px; height:auto; }
+
+/* brand-story / product page section gallery */
+.carousel{ max-width:940px; margin:0 auto; }
+.carousel.in-slot{ max-width:none; margin:0; }
+.cstage{ position:relative; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid var(--line);
+  background:linear-gradient(160deg,#FBF7F1,#EFEAE0); box-shadow:0 30px 66px -40px rgba(43,43,43,.45); }
+.cslide{ position:absolute; inset:0; margin:0; opacity:0; transition:opacity .6s ease; }
+.cslide.on{ opacity:1; }
+.cslide img{ width:100%; height:100%; object-fit:contain; display:block; }
+.cbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-top:14px; padding:0 4px; }
+.ccap{ position:relative; flex:1; height:22px; }
+.ccapt{ position:absolute; left:0; top:0; opacity:0; transition:opacity .4s; font-size:15px; font-weight:600; color:var(--ink); white-space:nowrap; }
+.ccapt::before{ content:'›'; color:var(--cta); margin-right:7px; }
+.ccapt.on{ opacity:1; }
+.cdots{ display:flex; gap:8px; }
+.cdot{ width:9px; height:9px; border-radius:50%; background:var(--line2); border:none; cursor:pointer; transition:.2s; padding:0; }
+.cdot.on{ background:var(--cta); width:24px; border-radius:6px; }
+
+/* compare slide (一般電商 vs 我們) */
+.cmp-grid{ display:grid; grid-template-columns:1fr auto 1.3fr; gap:24px; align-items:center; margin-top:6px; }
+.cmp-card{ background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:30px 34px; }
+.cmp-name{ font-family:var(--serif); font-size:22px; font-weight:700; margin-bottom:18px; }
+.cmp-card ul{ list-style:none; display:flex; flex-direction:column; gap:13px; }
+.cmp-card li{ position:relative; padding-left:30px; font-size:18px; line-height:1.4; }
+.cmp-card li::before{ content:'✓'; position:absolute; left:0; top:0; font-weight:700; }
+.cmp-plain{ background:#FBF7F1; }
+.cmp-plain .cmp-name{ color:var(--soft); }
+.cmp-plain li{ color:var(--soft); }
+.cmp-plain li::before{ color:var(--cream); }
+.cmp-ours{ border-color:var(--cta-soft2); background:linear-gradient(165deg, rgba(201,129,122,.10), #FFFFFF 62%); box-shadow:0 34px 70px -38px rgba(201,129,122,.6); }
+.cmp-ours .cmp-name{ color:var(--cta); }
+.cmp-ours li{ color:var(--ink); font-weight:500; }
+.cmp-ours li::before{ color:var(--cta); }
+.cmp-vs{ font-family:var(--eng); font-size:22px; font-weight:600; color:var(--cream); letter-spacing:.1em; }
+
+/* compare2: 問題 × 價值 table + 核心優勢 box */
+.c2-table{ display:grid; grid-template-columns:1fr 1.18fr; border:1px solid var(--line); border-radius:16px; overflow:hidden; box-shadow:0 26px 54px -44px rgba(43,43,43,.4); }
+.c2-th{ font-family:var(--serif); font-weight:700; font-size:16px; padding:18px 32px; background:#F2EBE2; color:var(--ink); }
+.c2-th-r{ color:#a85f58; background:var(--cta-soft); }
+.c2-q,.c2-v{ padding:17px 32px; font-size:15.5px; line-height:1.6; border-top:1px solid var(--line); }
+.c2-q{ color:var(--soft); }
+.c2-v{ color:var(--ink); font-weight:500; background:rgba(201,129,122,.05); }
+.c2-v::before{ content:'✓ '; color:var(--cta); font-weight:700; }
+.c2-foot{ display:grid; grid-template-columns:1fr 1.18fr; gap:18px; margin-top:16px; align-items:stretch; }
+.c2-close{ display:flex; align-items:center; font-family:var(--serif); font-size:18px; font-weight:600; line-height:1.45; color:var(--ink);
+  background:var(--cta-soft); border-left:4px solid var(--cta); border-radius:12px; padding:16px 24px; }
+.c2-hl{ background:linear-gradient(160deg, rgba(201,129,122,.12), #FFFFFF 70%); border:1px solid var(--cta-soft2); border-radius:14px; padding:14px 20px; }
+.c2-hl-t{ font-weight:700; color:var(--cta); font-size:15px; margin-bottom:9px; }
+.c2-hl ul{ list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:7px 18px; }
+.c2-hl li{ position:relative; padding-left:20px; font-size:14px; color:var(--ink); line-height:1.35; }
+.c2-hl li::before{ content:'✔'; position:absolute; left:0; color:var(--cta); }
+
+/* before / after slide */
+.ba-grid{ display:grid; grid-template-columns:1fr auto 1fr; gap:22px; align-items:center; margin-top:4px; }
+.ba-card{ border-radius:18px; padding:46px 34px; }
+.ba-name{ font-family:var(--serif); font-size:19px; font-weight:700; margin-bottom:28px; }
+.ba-card ul{ list-style:none; display:flex; flex-direction:column; gap:28px; }
+.ba-card li{ position:relative; padding-left:26px; font-size:16px; line-height:1.5; }
+.ba-before{ background:#F2EFEA; border:1px solid var(--line); }
+.ba-before .ba-name{ color:var(--soft); }
+.ba-before li{ color:var(--soft); }
+.ba-before li::before{ content:'✕'; position:absolute; left:0; top:0; color:#C0837A; font-weight:700; }
+.ba-after{ background:linear-gradient(165deg, rgba(201,129,122,.12), #FFFFFF 62%); border:1px solid var(--cta-soft2); box-shadow:0 34px 70px -38px rgba(201,129,122,.55); }
+.ba-after .ba-name{ color:var(--cta); }
+.ba-after li{ color:var(--ink); }
+.ba-after li::before{ content:'✓'; position:absolute; left:0; top:0; color:var(--cta); font-weight:700; }
+.ba-flow{ display:flex; flex-direction:column; align-items:center; gap:5px; padding:0 4px; }
+.ba-flow-step{ font-family:var(--eng); font-size:18px; font-weight:600; color:var(--cta); letter-spacing:.04em; white-space:nowrap; }
+.ba-flow-arrow{ color:var(--cream); font-size:17px; line-height:1; }
+.ba-foot{ margin-top:30px; text-align:center; }
+.ba-big{ font-family:var(--serif); font-size:clamp(20px,2.05vw,27px); font-weight:700; color:var(--ink); }
+.ba-small{ margin-top:9px; font-size:15px; color:var(--soft); }
+
+/* closing slide */
+.closing{ text-align:center; max-width:1000px; margin:0 auto; }
+.closing .kicker{ color:var(--cta); justify-content:center; margin-bottom:44px; }
+.closing-big{ font-family:var(--serif); font-weight:700; font-size:clamp(28px,3.1vw,44px); line-height:1.5; color:var(--ink); }
+.closing-big2{ font-family:var(--serif); font-weight:700; font-size:clamp(26px,2.9vw,40px); line-height:1.5; color:var(--cta); margin-top:30px; }
+.closing-icons{ display:flex; justify-content:center; gap:94px; margin-top:108px; }
+.cl-ico{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+.cl-ico-c{ width:62px; height:62px; border-radius:50%; background:var(--cta-soft); color:var(--cta); display:grid; place-items:center; }
+.cl-ico-c svg{ width:28px; height:28px; }
+.cl-ico-t{ font-size:16px; font-weight:600; color:var(--ink); }
+.closing-line{ display:inline-block; margin-top:92px; font-size:18px; font-weight:600; color:var(--cta); background:var(--cta-soft); border:1px solid var(--cta-soft2); padding:16px 36px; border-radius:999px; }
+
+/* ---------- ppt toolbar / annotation ---------- */
+.ppt-toolbar{ position:fixed; right:20px; bottom:22px; z-index:9999; display:flex; gap:6px; align-items:center;
+  padding:8px 10px; border-radius:14px; background:rgba(43,33,31,.9); backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.14); box-shadow:0 14px 40px rgba(43,43,43,.4); font-family:var(--sans); }
+.ppt-btn{ width:34px; height:34px; border-radius:9px; border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.07); color:#fff; cursor:pointer; display:grid; place-items:center; font-size:15px; line-height:1; transition:.15s; padding:0; }
+.ppt-btn:hover{ background:rgba(201,129,122,.32); border-color:rgba(201,129,122,.6); }
+.ppt-btn.active{ background:var(--cta); border-color:var(--cta); }
+.ppt-btn.ppt-color{ width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,.25); }
+.ppt-btn.ppt-color.active{ border-color:#fff; box-shadow:0 0 0 2px var(--cta); }
+.ppt-sep{ width:1px; height:22px; background:rgba(255,255,255,.18); margin:0 4px; }
+.annot-canvas{ position:fixed; inset:0; z-index:9000; pointer-events:none; }
+body.annot-mode .annot-canvas{ pointer-events:auto; cursor:crosshair; }
+
+:fullscreen .hint{ display:none !important; }
+:fullscreen .ppt-toolbar{ opacity:.42; transition:opacity .2s; }
+:fullscreen .ppt-toolbar:hover{ opacity:1; }
+
+@media (max-width:1100px){
+  .slide{ padding:88px 44px 96px; }
+  .topbar,.botbar{ left:44px; } .topbar{ right:44px; }
+  .cards-3{ grid-template-columns:1fr; } .mod-grid{ grid-template-columns:1fr; gap:30px; }
+  .map-grid{ grid-template-columns:repeat(2,1fr); } .flow{ grid-template-columns:repeat(3,1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wordmark"><span class="wm-dot"></span>VELIREO SKIN</div>
+  <div class="topbar-tag">電商平臺功能提案</div>
+</div>
+
+<div class="deck" id="deck"></div>
+
+<div class="botbar">
+  <div class="dots" id="dots"></div>
+  <div class="pageno" id="pageno">01 / 14</div>
+</div>
+<div class="hint">→／Space 翻頁 ・ 滾輪 ・ F 全螢幕 ・ D 塗鴉</div>
+
+<script>
+/* ============ 內容資料（要改文案，改這裡） ============ */
+const DECK = [
+  { type:'cover',
+    kicker:'VELIREO SKIN ・ E-COMMERCE PLATFORM',
+    title:'打造品牌的第二個營運團隊',
+    stats:['44+ Business Modules','8 Live Demo Modules','One Platform．Complete Operations'] },
+
+  { type:'goals',
+    kicker:'WHY THIS PLATFORM',
+    title:'不只是官網，而是一套會幫你賺錢的電商系統',
+    sub:'從成交、出貨、會員經營到再行銷，都在同一個後台完成。',
+    video:'assets/page-overview.mp4', img:'assets/goals-scene.jpg',
+    cards:[
+      {num:'01', h:'賣得順｜前台轉換', p:'從逛、選、結帳到回購，每一步都為轉換優化。'},
+      {num:'02', h:'出得準｜營運自動化', p:'金流 → 倉儲 → 物流 → 訂單一條龍，不靠人工接力搬資料。'},
+      {num:'03', h:'留得住｜會員經營', p:'分級、點數、訂閱、再行銷，把一次客變熟客。'},
+    ],
+    core:'一個後台管完前台、營運、會員與行銷——這是套版工具給不了的整合力。' },
+
+  { type:'map',
+    kicker:'PLATFORM AT A GLANCE',
+    title:'平臺完整模組地圖',
+    sub:'6 大面向、44 個模組全到位——不用再東拼西湊 5～10 套工具，一個後台就能完成品牌營運。',
+    groups:[
+      {lyr:'A', name:'前台購物', items:[['首頁'],['商品分類列表'],['商品詳情頁',1],['站內搜尋'],['購物車'],['金流結帳',1],['物流配送',1],['商品評論 UGC']]},
+      {lyr:'B', name:'品牌內容', items:[['品牌故事',1],['部落格 SEO'],['活動促銷頁'],['肌膚檢測 AI 導購'],['影音媒體牆']]},
+      {lyr:'C', name:'會員互動', items:[['會員中心',1],['會員分級 VIP'],['紅利點數錢包'],['訂閱定期購'],['推薦分潤聯盟'],['通知中心'],['AI 客服',1]]},
+      {lyr:'D', name:'行銷成長', items:[['優惠券引擎'],['EDM 自動化'],['LINE／簡訊推播'],['購物車挽回'],['個人化推薦'],['SEO 工具'],['社群電商'],['KOC 管理']]},
+      {lyr:'E', name:'營運後台', items:[['訂單管理 OMS',1],['倉儲庫存 WMS',1],['商品管理 PIM'],['客戶管理 CRM'],['金流對帳'],['出貨管理'],['發票管理'],['退換貨 RMA'],['數據分析'],['內容管理 CMS'],['權限管理']]},
+      {lyr:'F', name:'技術整合', items:[['第三方串接中心'],['多通路同步'],['API／Webhook'],['資安個資合規'],['效能 RWD／PWA']]},
+    ] },
+
+  { type:'module', idx:'01', kicker:'PAYMENT', title:'金流結帳', video:'assets/payment.mp4', vidRatio:'3076 / 2048',
+    headline:'每少一次付款障礙，就多一筆成交。', close:'從付款、折扣到退款，全流程自動化，不必人工對帳。',
+    feats:[
+      ['多元支付','信用卡分期・行動支付・ATM・超商・貨到付款'],
+      ['金流串接','綠界・藍新・TapPay・Stripe／PayPal'],
+      ['定期定額','定期購自動扣款、訂閱制'],
+      ['智能結帳','一頁式・訪客結帳・運費試算・未結提醒'],
+      ['優惠引擎','折扣碼・滿額折・會員價・紅利折抵'],
+      ['電子發票','載具・捐贈・財政部 API 自動開立'],
+      ['退款防詐','線上退刷・3D 驗證・每日對帳'],
+    ] },
+
+  { type:'module', idx:'02', kicker:'LOGISTICS', title:'物流配送', video:'assets/logistics.mp4', vidRatio:'2916 / 2116',
+    headline:'下單後，系統自動安排最適合的配送流程。',
+    feats:[
+      ['多元配送','宅配・四大超商・店到店・自取・海外'],
+      ['運費引擎','依重量地區分級・滿額免運・離島運費'],
+      ['出貨管理','批次出貨・單據一鍵列印'],
+      ['物流追蹤','狀態自動更新・到貨通知（LINE）'],
+      ['彈性出貨','預購・分批・合併・指定到貨日'],
+      ['逆物流','退換貨單・超商退貨・進度查詢'],
+      ['物流報表','成本與配送效率分析'],
+    ] },
+
+  { type:'module', idx:'03', kicker:'WAREHOUSE', title:'倉儲庫存 WMS', video:'assets/warehouse.mp4', vidRatio:'2916 / 2116',
+    headline:'少超賣、少缺貨、少積壓，就是庫存管理最大的價值。',
+    feats:[
+      ['即時庫存','多倉管理・安全庫存警示・補貨建議'],
+      ['商品 SKU','多規格・組合商品・贈品庫存'],
+      ['進銷存','進貨・銷貨・調撥・盤點全紀錄'],
+      ['批號效期','效期管理・FEFO 先到期先出'],
+      ['倉內作業','收貨→上架→揀貨→出貨，條碼揀貨'],
+      ['自動補貨','低庫存自動產生採購單'],
+      ['多通路同步','官網＋蝦皮＋momo 不超賣'],
+    ] },
+
+  { type:'module', idx:'04', kicker:'ORDER', title:'訂單管理 OMS', video:'assets/order.mp4', vidRatio:'2916 / 2116',
+    headline:'每一筆訂單，都能自動往下一步走。',
+    feats:[
+      ['全通路彙整','官網・蝦皮・momo・實體集中'],
+      ['狀態流轉','待付款→出貨→完成，可自訂'],
+      ['訂單操作','合併拆分・改址改規格・補開發票'],
+      ['異常處理','缺貨・付款失敗・客訴標記'],
+      ['自動化規則','自動分倉・帶物流・發通知'],
+      ['批次作業','批次出貨・列印・匯出'],
+      ['查詢報表','多條件篩選・財務對帳匯出'],
+    ] },
+
+  { type:'module', idx:'05', kicker:'BRAND STORY', title:'品牌故事',
+    headline:'品牌故事不是在介紹自己，而是回答「為什麼要相信你」。',
+    gallery:[{img:'assets/bs-1.jpg',cap:'創辦人真心話'},{img:'assets/bs-2.jpg',cap:'品牌理念'},{img:'assets/bs-3.jpg',cap:'核心科技'},{img:'assets/bs-4.jpg',cap:'研發歷程'}],
+    feats:[
+      ['創辦人故事','科技業 PM，因自身困擾而創業'],
+      ['品牌理念','「懶得保養」——不過度清潔、一次到位'],
+      ['研發敘事','植物油・益生菌・玻尿酸成分溯源'],
+      ['沉浸體驗','時間軸・滾動敘事・品牌影音'],
+      ['信任牆','媒體報導・真實見證・UGC'],
+      ['導流串接','故事 → 產品 → 加入會員'],
+    ] },
+
+  { type:'module', idx:'06', kicker:'PRODUCT', title:'商品詳情頁 PDP',
+    headline:'每一頁商品頁，都是一位 24 小時不下班的業務。',
+    gallery:[{img:'assets/product-1.jpg',cap:'產品主圖'},{img:'assets/product-2.jpg',cap:'產品介紹'},{img:'assets/product-3.jpg',cap:'核心成分'},{img:'assets/product-4.jpg',cap:'使用方法'},{img:'assets/product-5.jpg',cap:'常見問題'}],
+    feats:[
+      ['商品呈現','多圖・影片・360°・情境圖'],
+      ['規格庫存','容量組合選擇・即時庫存顯示'],
+      ['動態定價','會員價・活動價・組合價自動套'],
+      ['行動轉換','加購物車・立即購・訂閱入口'],
+      ['內容信任','成分說明・相片評價・頁內 FAQ'],
+      ['急迫感','限時倒數・庫存緊張提示'],
+      ['擴散 SEO','社群分享・結構化資料'],
+    ] },
+
+  { type:'module', idx:'07', kicker:'MEMBER', title:'會員中心', video:'assets/member.mp4', vidRatio:'2916 / 2116',
+    headline:'留住一位老客，比找到一位新客更便宜。',
+    feats:[
+      ['註冊登入','手機 OTP・Google／Apple／LINE／FB'],
+      ['會員中心','個資・地址簿・訂單・發票'],
+      ['分級制度','VIP 權益・升等・會員日'],
+      ['點數錢包','紅利購物金累積折抵'],
+      ['訂閱管理','定期購暫停／修改／取消'],
+      ['售後服務','線上客服・退換貨・工單・FAQ'],
+      ['安全合規','裝置管理・資料下載刪除（個資法）'],
+    ] },
+
+  { type:'module', idx:'08', kicker:'AI SERVICE', title:'AI 客服', videos:['assets/ai-support.mp4','assets/ai-support-2.mp4','assets/ai-support-3.mp4'], vidRatio:'600 / 1300', portrait:true,
+    headline:'讓客服從「回答問題」，變成「幫你成交」。',
+    feats:[
+      ['全站懸浮','每頁右下，不打斷瀏覽'],
+      ['多輪引導','諮詢 → 推薦 → 結單一路接住'],
+      ['智能導購','連動肌膚檢測推薦品項'],
+      ['訂單自助','物流進度・退換貨即時查'],
+      ['知識庫','FAQ 自動回覆・真人轉接'],
+      ['雙渠道','官網＋LINE 同步'],
+      ['智能經營','對話自動分級・入 CRM・主動挽回'],
+    ] },
+
+  { type:'overview',
+    kicker:'MORE MODULES',
+    title:'還有這些功能，都是標配',
+    sub:'不是另外加購，是平台本來就內建。',
+    cards:[
+      {h:'前台與內容', ico:'store', items:['首頁主視覺','商品分類列表','站內搜尋篩選','購物車湊單','商品評論 UGC','部落格 SEO','活動促銷頁','影音媒體牆']},
+      {h:'品牌會員留存', ico:'crown', items:['肌膚檢測 AI 導購','會員分級 VIP','紅利點數錢包','訂閱定期購','推薦分潤聯盟','通知訊息中心']},
+      {h:'行銷成長', ico:'trend', items:['優惠券促銷引擎','EDM 行銷自動化','LINE／簡訊推播','購物車挽回','個人化推薦','SEO 工具','社群電商整合','KOC 合作管理']},
+      {h:'營運與技術', ico:'gear', wide:true, items:['商品管理 PIM','客戶管理 CRM','金流對帳','出貨管理','發票管理','退換貨 RMA','數據分析 Dashboard','內容管理 CMS','權限管理','第三方串接中心','多通路同步','API／Webhook','資安合規','效能 RWD']},
+    ] },
+
+  { type:'compare',
+    kicker:'WHY CUSTOM DEVELOPMENT',
+    title:'一般電商做得到開店，客製化平台做到品牌成長',
+    sub:'品牌經營不會停止成長，系統也不該停留在今天。',
+    rows:[
+      ['想新增功能，但平台做不到','依品牌需求客製開發，不受既有功能限制'],
+      ['營運流程需要大量人工處理','自動化串接金流、物流、倉儲、會員與訂單'],
+      ['系統越來越多，資料分散難管理','一個後台整合所有核心營運系統'],
+      ['品牌成長後，需要更多工具與流程','系統可持續擴充，不必重新建置網站'],
+      ['需要串接 ERP、POS、CRM、API 等系統','提供完整第三方串接與客製整合能力'],
+      ['每次行銷活動都要重新調整流程','系統可依品牌需求持續優化與新增功能'],
+      ['套版功能受限，品牌只能配合平台','系統依品牌的經營模式設計，而不是反過來'],
+    ],
+    close:'今天需要的功能，我們能做；明天品牌成長的新需求，我們也能一起完成。',
+    highlights:['專屬品牌流程，不受套版限制','功能可持續擴充，不必重新換平台','一次建置，陪伴品牌長期成長','降低重複投資，保留既有系統資產'] },
+
+  { type:'process',
+    kicker:'HOW WE WORK',
+    title:'合作流程與時程',
+    sub:'六階段把專案帶上線，過程透明可追。',
+    steps:[
+      {n:'01', h:'需求確認'},{n:'02', h:'架構設計'},{n:'03', h:'開發建置'},
+      {n:'04', h:'串接測試'},{n:'05', h:'上線部署'},{n:'06', h:'售後維護'},
+    ],
+    timeBig:'6–10 週', timeTxt:'依模組範圍估算：標準版偏短、完整版偏長，並依素材提供速度微調。',
+    note:'每一階段都會提供驗收，確認後再進入下一步——你隨時清楚進度。' },
+
+  { type:'beforeafter',
+    kicker:'THE VALUE OF CUSTOM DEVELOPMENT',
+    title:'導入後，你得到的不只是網站',
+    sub:'從訂單、會員、營運到品牌經營，把每天重複的人工作業交給系統，讓團隊把時間投入更重要的事。',
+    before:{ name:'傳統經營方式', items:['每天人工整理訂單','庫存容易超賣','客服重複回答同樣問題','行銷工具四散','會員資料分散','每新增需求都要重新找工具'] },
+    flow:['Today','Automation','Growth'],
+    after:{ name:'客製化電商平台', items:['訂單自動流轉','庫存即時同步','AI 客服全天候服務','一個後台整合所有工具','CRM 建立會員資產','功能可持續擴充'] },
+    big:'把重複的工作交給系統，把時間留給品牌成長。',
+    small:'我們打造的不只是網站，而是一套陪伴品牌長期經營的電商平台。' },
+
+  { type:'closing',
+    kicker:'品牌數位化 ・ DIGITAL TRANSFORMATION',
+    big:'品牌真正需要的，不是一個網站。',
+    big2:'而是一套可以陪著品牌一起成長的營運系統。',
+    icons:[{i:'trend',t:'持續成交'},{i:'gear',t:'流程自動化'},{i:'users',t:'累積會員資產'},{i:'rocket',t:'功能持續擴充'}],
+    line:'今天解決現在的需求，明天支撐未來的成長。' },
+];
+
+/* ============ 渲染 ============ */
+const esc = s => String(s);
+const ICONS = {
+  store:'<path d="M4 9l1.3-4h13.4L20 9"/><path d="M4.5 9h15v10h-15z"/><path d="M9.5 19v-5h5v5"/>',
+  crown:'<path d="M4 8l3.6 3L12 5l4.4 6L20 8l-1.6 10H5.6z"/>',
+  trend:'<path d="M4 16l5-5 4 4 7-7"/><path d="M15 8h5v5"/>',
+  gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v2.6M12 17.9v2.6M3.5 12h2.6M17.9 12h2.6M6 6l1.9 1.9M16.1 16.1L18 18M18 6l-1.9 1.9M7.9 16.1L6 18"/>',
+  book:'<path d="M12 6c-2-1.2-5-1.2-7.5 0v12c2.5-1.2 5.5-1.2 7.5 0 2-1.2 5-1.2 7.5 0V6c-2.5-1.2-5.5-1.2-7.5 0z"/><path d="M12 6v12"/>',
+  plug:'<path d="M9 3v4M15 3v4"/><path d="M7 7h10v3a5 5 0 01-10 0z"/><path d="M12 15v6"/>',
+  image:'<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 15l-5-5-8 8"/>',
+  users:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 010 5.6M21 20c0-2.6-1.4-4.8-3.5-5.7"/>',
+  rocket:'<path d="M12 3c2.6 1.4 4 4.3 4 8l-4 3.5-4-3.5c0-3.7 1.4-6.6 4-8z"/><circle cx="12" cy="9" r="1.5"/><path d="M8.5 15.5L6 21l4-2M15.5 15.5L18 21l-4-2"/>'
+};
+const svgIco = k => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]||''}</svg>`;
+
+function rCover(s){
+  return `<div class="cover-full">
+    <img class="cover-photo" src="assets/cover-hero.png" alt="Velireo Skin 絲緞益菌平衡沐浴油霜">
+    <div class="cover-veil"></div>
+    <div class="cover-panel">
+      <div class="kicker">${s.kicker}</div>
+      <h1 class="cover-title">${s.title}</h1>
+      <div class="cover-stats">${s.stats.map((t,i)=>`<div class="cstat${i===s.stats.length-1?' tagline':''}">${t}</div>`).join('')}</div>
+    </div>
+  </div>`;
+}
+function rHead(s){
+  return `<div class="head-block">
+    <div class="kicker">${s.kicker}</div>
+    <h2 class="slide-title">${s.title}</h2>
+    <p class="slide-sub">${s.sub}</p>
+  </div>`;
+}
+function rGoals(s){
+  return `<div class="inner">
+    ${rHead(s)}
+    <div class="goals-grid">
+      <div class="goals-img">
+        ${s.video
+          ? `<div class="goals-vid"><video class="vfill" src="${s.video}" autoplay muted loop playsinline></video></div>`
+          : `<div class="imgslot" data-img="開場情境圖">${s.img ? `<img class="ifill" src="${s.img}" alt="">` : `<div class="ico">&#128247;</div><div class="cap">情境／氛圍圖</div><div class="note">置換為品牌情境圖</div>`}</div>`}
+      </div>
+      <div class="goals-cards">${s.cards.map(c=>`
+        <div class="card row"><div class="num">${c.num}</div><div><h3>${c.h}</h3><p>${c.p}</p></div></div>`).join('')}
+      </div>
+    </div>
+    <div class="core-bar">${s.core}</div>
+  </div>`;
+}
+function rMap(s){
+  const ico = {A:'store',B:'book',C:'crown',D:'trend',E:'gear',F:'plug'};
+  const accent = {
+    A:['#F7E7E3','#C0807A'],
+    B:['#F8EBDE','#C08A5E'],
+    C:['#F4EBD8','#B49A55'],
+    D:['#F6E6EC','#B5778F'],
+    E:['#ECECEA','#8A847C'],
+    F:['#E7EEE5','#7E9173']
+  };
+  return `<div class="inner">
+    ${rHead(s)}
+    <div class="mapx">${s.groups.map(g=>{
+      const a = accent[g.lyr] || accent.A;
+      return `<div class="lane">
+        <div class="lane-cat">
+          <span class="ovx-ico" style="background:${a[0]};color:${a[1]}">${svgIco(ico[g.lyr]||'store')}</span>
+          <div class="lane-meta"><span class="lane-name">${g.name}</span><span class="lane-count">${g.items.length} 模組</span></div>
+        </div>
+        <div class="lane-tiles">${g.items.map(it=>`<span class="chip${it[1]?' demo':''}">${it[0]}</span>`).join('')}</div>
+      </div>`;
+    }).join('')}</div>
+    <div class="map-note"><span class="dm">▶</span> 標示者為本提案附 demo 實機影片的 8 個模組。</div>
+  </div>`;
+}
+function rModule(s){
+  const isImg = s.media === 'image';
+  const vids = s.videos || (s.video ? [s.video] : []);
+  const hasVid = vids.length > 0;
+  const hasGal = !!s.gallery;
+  const badge = hasGal ? '🎠 官網實際畫面（自動輪播）' : (hasVid ? '▶ 本頁 DEMO 實機影片' : (isImg ? '🖼️ 品牌主視覺（圖／GIF）' : '🖼️ 本頁 DEMO 畫面（圖／GIF）'));
+  const cap   = `${s.title} ・ DEMO`;
+  const note  = '置換為畫面截圖或操作 GIF（16:9）';
+  const foot  = '畫面／GIF 由 Velireo 提供，後製嵌入此處。';
+  const slot = hasGal
+    ? `<div class="carousel in-slot" data-int="2600">
+        <div class="cstage">${s.gallery.map((g,i)=>`<figure class="cslide${i===0?' on':''}"><img src="${g.img}" alt=""></figure>`).join('')}</div>
+        <div class="cbar"><div class="ccap">${s.gallery.map((g,i)=>`<span class="ccapt${i===0?' on':''}">${g.cap}</span>`).join('')}</div><div class="cdots">${s.gallery.map((g,i)=>`<button class="cdot${i===0?' on':''}" data-i="${i}" aria-label="${g.cap}"></button>`).join('')}</div></div>
+      </div>`
+    : (s.portrait && hasVid)
+    ? `<div class="phone-row phone-row-${vids.length}">${vids.map(v=>`<div class="vslot vslot-portrait" style="aspect-ratio:${s.vidRatio||'600/1300'}"><video class="vfill" src="${v}" autoplay muted loop playsinline></video></div>`).join('')}</div>`
+    : `<div class="vslot" data-module="${s.title}"${hasVid?` style="aspect-ratio:${s.vidRatio||'16/9'}"`:''}>
+        ${hasVid ? `<video class="vfill" src="${vids[0]}" autoplay muted loop playsinline></video>` : (s.img ? `<img class="vfill" src="${s.img}" alt="">` : `<div class="vslot-play">${svgIco('image')}</div><div class="vslot-cap">${cap}</div><div class="vslot-note">${note}</div>`)}
+      </div>`;
+  return `<div class="inner">
+    <div class="mod-head">
+      <div class="kicker">${s.idx}　${s.title}　·　${s.kicker}</div>
+      <h2 class="slide-title mod-headline">${s.headline}</h2>
+    </div>
+    <div class="mod-grid">
+      <div class="mod-feats">
+        ${s.feats.map(f=>`<div class="ft"><b>${f[0]}</b><span>　${f[1]}</span></div>`).join('')}
+        ${s.close?`<div class="mod-close">${s.close}</div>`:''}
+      </div>
+      <div class="mod-video${s.portrait?' is-portrait':''}">
+        <div class="demo-badge">${badge}</div>
+        ${slot}
+        ${(hasVid||s.img||hasGal) ? '' : `<div class="mod-foot">${foot}</div>`}
+      </div>
+    </div>
+  </div>`;
+}
+function rOverview(s){
+  const accent = { store:['#F7E7E3','#C0807A'], crown:['#F4EBD8','#B49A55'], trend:['#F6E6EC','#B5778F'], gear:['#ECECEA','#8A847C'] };
+  return `<div class="inner">
+    ${rHead(s)}
+    <div class="mapx">${s.cards.map(c=>{
+      const a = accent[c.ico] || accent.store;
+      return `<div class="lane">
+        <div class="lane-cat">
+          <span class="ovx-ico" style="background:${a[0]};color:${a[1]}">${svgIco(c.ico)}</span>
+          <div class="lane-meta"><span class="lane-name">${c.h}</span><span class="lane-count">${c.items.length} 模組</span></div>
+        </div>
+        <div class="lane-tiles">${c.items.map(it=>`<span class="chip">${it}</span>`).join('')}</div>
+      </div>`;
+    }).join('')}</div>
+  </div>`;
+}
+function rCompare(s){
+  return `<div class="inner">
+    ${rHead(s)}
+    <div class="c2-table">
+      <div class="c2-th c2-th-l">品牌經營常遇到的問題</div>
+      <div class="c2-th c2-th-r">客製化平台帶來的價值</div>
+      ${s.rows.map(r=>`<div class="c2-q">${r[0]}</div><div class="c2-v">${r[1]}</div>`).join('')}
+    </div>
+    <div class="c2-foot">
+      <div class="c2-close">${s.close}</div>
+      <div class="c2-hl">
+        <div class="c2-hl-t">⭐ 客製化平台的核心優勢</div>
+        <ul>${s.highlights.map(h=>`<li>${h}</li>`).join('')}</ul>
+      </div>
+    </div>
+  </div>`;
+}
+function rBeforeAfter(s){
+  return `<div class="inner">
+    ${rHead(s)}
+    <div class="ba-grid">
+      <div class="ba-card ba-before">
+        <div class="ba-name">${s.before.name}</div>
+        <ul>${s.before.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+      <div class="ba-flow">${s.flow.map((f,i)=>`<div class="ba-flow-step">${f}</div>${i<s.flow.length-1?'<div class="ba-flow-arrow">↓</div>':''}`).join('')}</div>
+      <div class="ba-card ba-after">
+        <div class="ba-name">${s.after.name}</div>
+        <ul>${s.after.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+    </div>
+    <div class="ba-foot">
+      <div class="ba-big">${s.big}</div>
+      <div class="ba-small">${s.small}</div>
+    </div>
+  </div>`;
+}
+function rClosing(s){
+  return `<div class="inner closing">
+    <div class="kicker">${s.kicker}</div>
+    <h2 class="closing-big">${s.big}</h2>
+    <p class="closing-big2">${s.big2}</p>
+    <div class="closing-icons">${s.icons.map(ic=>`<div class="cl-ico"><span class="cl-ico-c">${svgIco(ic.i)}</span><div class="cl-ico-t">${ic.t}</div></div>`).join('')}</div>
+    <div class="closing-line">${s.line}</div>
+  </div>`;
+}
+function rProcess(s){
+  return `<div class="inner">
+    ${rHead(s)}
+    <div class="flow">${s.steps.map(st=>`
+      <div class="step"><div class="bub">${st.n}</div><h4>${st.h}</h4></div>`).join('')}
+    </div>
+    <div class="timebar"><div class="lab">${s.timeBig}</div><div class="txt">${s.timeTxt}</div></div>
+    ${s.note?`<div class="proc-note">${s.note}</div>`:''}
+  </div>`;
+}
+const RENDER = { cover:rCover, goals:rGoals, map:rMap, module:rModule, overview:rOverview, compare:rCompare, process:rProcess, beforeafter:rBeforeAfter, closing:rClosing };
+
+/* ============ build + nav ============ */
+const deckEl = document.getElementById('deck');
+deckEl.innerHTML = DECK.map(s=>`<section class="slide slide-${s.type}">${RENDER[s.type](s)}</section>`).join('');
+let slides = Array.from(document.querySelectorAll('.slide'));
+let current = 0;
+const TOTAL = slides.length;
+
+const dotsEl = document.getElementById('dots');
+dotsEl.innerHTML = slides.map((_,i)=>`<button class="dot" data-i="${i}" aria-label="第 ${i+1} 頁"></button>`).join('');
+const dotEls = Array.from(dotsEl.children);
+dotEls.forEach(d=>d.addEventListener('click',()=>showSlide(+d.dataset.i)));
+
+const pageno = document.getElementById('pageno');
+const pad = n => String(n).padStart(2,'0');
+
+function showSlide(i){
+  i = Math.max(0, Math.min(TOTAL-1, i));
+  slides[current].classList.remove('active');
+  current = i;
+  slides[current].classList.add('active');
+  dotEls.forEach((d,k)=>d.classList.toggle('on', k===current));
+  pageno.textContent = `${pad(current+1)} / ${pad(TOTAL)}`;
+  document.body.classList.toggle('on-cover', current===0);
+}
+showSlide(0);
+
+/* ---------- carousels (auto 輪播) ---------- */
+(function initCarousels(){
+  document.querySelectorAll('.carousel').forEach(c=>{
+    const sl=[...c.querySelectorAll('.cslide')], cp=[...c.querySelectorAll('.ccapt')], dt=[...c.querySelectorAll('.cdot')];
+    if(sl.length<2) return;
+    let i=0, t; const intv=+c.dataset.int||2600;
+    const go=n=>{ i=(n+sl.length)%sl.length; sl.forEach((x,k)=>x.classList.toggle('on',k===i)); cp.forEach((x,k)=>x.classList.toggle('on',k===i)); dt.forEach((x,k)=>x.classList.toggle('on',k===i)); };
+    const reset=()=>{ clearInterval(t); t=setInterval(()=>go(i+1),intv); };
+    dt.forEach((d,k)=>d.addEventListener('click',()=>{ go(k); reset(); }));
+    reset();
+  });
+})();
+
+/* ============ PPT 模式：click / wheel / keys / fullscreen / 塗鴉 ============ */
+(function pptMode(){
+  const tb = document.createElement('div');
+  tb.className = 'ppt-toolbar';
+  tb.innerHTML = `
+    <button class="ppt-btn" data-act="prev" title="上一頁 (←)">‹</button>
+    <button class="ppt-btn" data-act="next" title="下一頁 (→ / Space)">›</button>
+    <span class="ppt-sep"></span>
+    <button class="ppt-btn" data-act="fullscreen" title="全螢幕 (F)">⛶</button>
+    <button class="ppt-btn" data-act="lock" title="鎖定點擊翻頁（防誤觸）">🔓</button>
+    <span class="ppt-sep"></span>
+    <button class="ppt-btn" data-tool="pen" title="筆 (P)">✎</button>
+    <button class="ppt-btn" data-tool="hl" title="螢光筆 (H)">🖍</button>
+    <button class="ppt-btn" data-tool="rect" title="方框 (R)">▭</button>
+    <button class="ppt-btn ppt-color" data-color="#C9817A" style="background:#C9817A" title="玫瑰粉"></button>
+    <button class="ppt-btn ppt-color" data-color="#D64545" style="background:#D64545" title="紅"></button>
+    <button class="ppt-btn ppt-color" data-color="#C99A1F" style="background:#C99A1F" title="金"></button>
+    <button class="ppt-btn" data-act="undo" title="上一步 (Ctrl+Z)">↶</button>
+    <button class="ppt-btn" data-act="clear" title="清除塗鴉 (C)">⌫</button>`;
+  document.body.appendChild(tb);
+
+  const canvas = document.createElement('canvas');
+  canvas.className = 'annot-canvas';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  function sizeCanvas(){
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = innerWidth*dpr; canvas.height = innerHeight*dpr;
+    canvas.style.width = innerWidth+'px'; canvas.style.height = innerHeight+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  sizeCanvas();
+  addEventListener('resize', ()=>{ const snap=canvas.toDataURL(); sizeCanvas(); const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,innerWidth,innerHeight); img.src=snap; });
+
+  let tool='pen', color='#C9817A', annotMode=false, lockClick=false, drawing=false, startX=0, startY=0, strokes=[];
+  function pushUndo(){ try{ strokes.push(canvas.toDataURL()); if(strokes.length>40) strokes.shift(); }catch(e){} }
+  function undo(){ if(!strokes.length) return; const d=strokes.pop(); const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,innerWidth,innerHeight); }; img.src=d; }
+  function clearAnnot(){ strokes=[]; ctx.clearRect(0,0,canvas.width,canvas.height); }
+  function setAnnotMode(on){ annotMode=!!on; document.body.classList.toggle('annot-mode',annotMode); if(!annotMode) clearAnnot(); }
+  function setTool(t){ if(annotMode && tool===t){ setAnnotMode(false); tb.querySelectorAll('[data-tool]').forEach(b=>b.classList.remove('active')); return; } tool=t; tb.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active', b.dataset.tool===t)); setAnnotMode(true); }
+  function setColor(c){ color=c; tb.querySelectorAll('.ppt-color').forEach(b=>b.classList.toggle('active', b.dataset.color===c)); }
+  setColor(color);
+
+  const pos = e => { const t=e.touches?e.touches[0]:e; return {x:t.clientX,y:t.clientY}; };
+  canvas.addEventListener('pointerdown', e=>{ if(!annotMode) return; e.preventDefault(); drawing=true; pushUndo(); const p=pos(e); startX=p.x; startY=p.y;
+    if(tool==='pen'||tool==='hl'){ ctx.strokeStyle=color; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.lineWidth=tool==='hl'?16:3; ctx.globalAlpha=tool==='hl'?.32:1; ctx.beginPath(); ctx.moveTo(startX,startY); } });
+  canvas.addEventListener('pointermove', e=>{ if(!drawing) return; const p=pos(e);
+    if(tool==='pen'||tool==='hl'){ ctx.lineTo(p.x,p.y); ctx.stroke(); }
+    else if(tool==='rect'){ const d=strokes[strokes.length-1]; const draw=()=>{ ctx.strokeStyle=color; ctx.lineWidth=3; ctx.globalAlpha=1; ctx.strokeRect(startX,startY,p.x-startX,p.y-startY); };
+      if(d){ const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,innerWidth,innerHeight); draw(); }; img.src=d; } else { ctx.clearRect(0,0,canvas.width,canvas.height); draw(); } } });
+  const endDraw=()=>{ drawing=false; ctx.globalAlpha=1; };
+  canvas.addEventListener('pointerup', endDraw); canvas.addEventListener('pointerleave', endDraw);
+
+  tb.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
+    const {act,tool:t,color:c}=b.dataset;
+    if(act==='prev') showSlide(current-1);
+    else if(act==='next') showSlide(current+1);
+    else if(act==='fullscreen') toggleFull();
+    else if(act==='lock'){ lockClick=!lockClick; b.classList.toggle('active',lockClick); b.textContent=lockClick?'🔒':'🔓'; }
+    else if(act==='undo') undo();
+    else if(act==='clear') clearAnnot();
+    else if(t) setTool(t);
+    else if(c) setColor(c); });
+
+  function toggleFull(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); }
+
+  document.addEventListener('click', e=>{ if(lockClick||annotMode) return;
+    if(e.target.closest('a,button,input,textarea,select,video,.vslot,.carousel,.card,.dcard,.map-col,.ov-card,.annot-canvas,.ppt-toolbar,.botbar,.topbar')) return;
+    if(e.clientX > innerWidth/2) showSlide(current+1); else showSlide(current-1); });
+
+  let wheelLock=false;
+  addEventListener('wheel', e=>{ if(annotMode||wheelLock) return; if(Math.abs(e.deltaY)<25) return; wheelLock=true; setTimeout(()=>wheelLock=false,700); showSlide(e.deltaY>0?current+1:current-1); }, {passive:true});
+
+  addEventListener('keydown', e=>{ if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+    if(e.key===' '){ e.preventDefault(); showSlide(e.shiftKey?current-1:current+1); }
+    else if(e.key==='ArrowRight') showSlide(current+1);
+    else if(e.key==='ArrowLeft') showSlide(current-1);
+    else if(e.key==='f'||e.key==='F') toggleFull();
+    else if(e.key==='d'||e.key==='D') setAnnotMode(!annotMode);
+    else if(e.key==='p'||e.key==='P') setTool('pen');
+    else if(e.key==='h'||e.key==='H') setTool('hl');
+    else if(e.key==='r'||e.key==='R') setTool('rect');
+    else if(e.key==='c'||e.key==='C') clearAnnot();
+    else if((e.ctrlKey||e.metaKey)&&e.key==='z') undo();
+    else if(e.key==='Escape'){ if(annotMode) setAnnotMode(false); } });
+
+  const _show = window.showSlide;
+  window.showSlide = function(i){ clearAnnot(); _show(i); };
+})();
+</script>
+</body>
+</html>

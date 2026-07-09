@@ -474,6 +474,62 @@ body.nav-started .hint{ opacity:0; transition:opacity .6s ease; pointer-events:n
   color:#fff; font-size:14px; letter-spacing:.04em; white-space:nowrap;
   box-shadow:0 10px 30px rgba(43,43,43,.4); }
 @media (orientation:portrait) and (max-width:600px){ .rotate-hint{ display:block; } }
+
+/* ============================================================
+   最後三張投影片視覺優化（Codex gpt-5.5 建議：流程/前後對照/收尾）
+   ============================================================ */
+/* ── 第14張 合作流程：玫瑰金 progress rail ── */
+.flow{ grid-template-columns:repeat(6,1fr); gap:18px; margin-top:34px; padding:8px 10px 0; }
+.flow::before{ left:7.5%; right:7.5%; top:42px; height:3px; border-radius:999px;
+  background:linear-gradient(90deg, rgba(216,197,181,.45), rgba(201,129,122,.72)); opacity:1; }
+.step .bub{ width:74px; height:74px; margin:0 auto 18px;
+  background:radial-gradient(circle at 34% 26%, #FFFFFF 0 28%, rgba(201,129,122,.10) 100%);
+  border:1.5px solid rgba(201,129,122,.72); font-size:27px; color:#A85F58;
+  box-shadow:0 18px 42px -22px rgba(201,129,122,.72), inset 0 0 0 7px rgba(255,253,249,.72); }
+.step h4{ font-size:18px; line-height:1.35; letter-spacing:.02em; }
+.timebar{ margin-top:50px; gap:22px; border-radius:18px; padding:24px 32px;
+  background:linear-gradient(135deg, rgba(201,129,122,.14), rgba(255,255,255,.82));
+  border:1px solid rgba(201,129,122,.28); box-shadow:0 28px 70px -48px rgba(201,129,122,.68); }
+.timebar .lab{ font-size:40px; color:#A85F58; letter-spacing:.02em; }
+.timebar .txt{ font-size:18px; line-height:1.65; color:var(--ink); }
+.proc-note{ margin-top:18px; font-size:15px; line-height:1.7; color:var(--soft); }
+/* ── 第15張 導入後：中間垂直轉換軸 + 強化前後對比 ── */
+.ba-grid{ grid-template-columns:1fr 96px 1fr; gap:24px; align-items:center; margin-top:20px; }
+.ba-card{ border-radius:20px; padding:42px 38px; min-height:410px; }
+.ba-name{ font-size:20px; margin-bottom:30px; letter-spacing:.02em; }
+.ba-card ul{ gap:24px; }
+.ba-card li{ padding-left:30px; font-size:16px; line-height:1.55; }
+.ba-before{ background:#F1ECE6; border:1px solid rgba(43,43,43,.09); box-shadow:inset 0 1px 0 rgba(255,255,255,.58); }
+.ba-before .ba-name, .ba-before li{ color:rgba(107,98,92,.82); }
+.ba-before li::before{ color:rgba(192,131,122,.78); }
+.ba-after{ background:linear-gradient(160deg, rgba(201,129,122,.16), rgba(255,255,255,.94) 54%), #FFFFFF;
+  border:1px solid rgba(201,129,122,.30); box-shadow:0 34px 80px -42px rgba(201,129,122,.72), 0 1px 0 rgba(255,255,255,.9) inset; }
+.ba-after .ba-name{ color:#A85F58; }
+.ba-after li{ color:var(--ink); font-weight:500; }
+.ba-after li::before{ color:#A85F58; }
+.ba-flow{ justify-content:center; gap:8px; min-height:360px; padding:0; position:relative; }
+.ba-flow::before{ content:''; position:absolute; top:22px; bottom:22px; left:50%; width:1px; transform:translateX(-50%);
+  background:linear-gradient(180deg, rgba(216,197,181,.22), rgba(201,129,122,.55), rgba(216,197,181,.22)); }
+.ba-flow-step{ position:relative; z-index:1; font-size:19px; color:#A85F58; letter-spacing:.06em; background:var(--bg); padding:5px 8px; }
+.ba-flow-arrow{ position:relative; z-index:1; color:rgba(201,129,122,.55); font-size:18px; background:var(--bg); padding:1px 0; }
+.ba-foot{ margin-top:28px; padding-top:18px; border-top:1px solid rgba(201,129,122,.18); }
+.ba-big{ font-size:28px; line-height:1.45; }
+.ba-small{ margin-top:8px; }
+/* ── 第16張 收尾：四價值 value rail + 強收尾 pill ── */
+.closing{ max-width:1080px; }
+.closing .kicker{ margin-bottom:34px; font-size:13px; letter-spacing:.24em; color:#A85F58; }
+.closing-big{ font-size:46px; line-height:1.42; letter-spacing:.01em; }
+.closing-big2{ font-size:42px; line-height:1.42; margin-top:22px; letter-spacing:.01em; color:#A85F58; }
+.closing-icons{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin:76px auto 0; width:min(780px,100%);
+  border-top:1px solid rgba(201,129,122,.18); border-bottom:1px solid rgba(201,129,122,.18); padding:24px 0; }
+.cl-ico{ gap:14px; position:relative; }
+.cl-ico + .cl-ico::before{ content:''; position:absolute; left:0; top:8px; bottom:8px; width:1px; background:rgba(201,129,122,.16); }
+.cl-ico-c{ width:58px; height:58px; background:linear-gradient(145deg, rgba(201,129,122,.15), rgba(255,255,255,.9));
+  color:#A85F58; border:1px solid rgba(201,129,122,.22); box-shadow:0 18px 42px -30px rgba(201,129,122,.78); }
+.cl-ico-t{ font-size:15px; letter-spacing:.02em; }
+.closing-line{ margin-top:52px; font-size:17px; color:#A85F58;
+  background:linear-gradient(135deg, rgba(201,129,122,.15), rgba(255,255,255,.86));
+  border:1px solid rgba(201,129,122,.30); padding:16px 42px; box-shadow:0 24px 60px -42px rgba(201,129,122,.72); }
 </style>
 </head>
 <body>
@@ -616,7 +672,7 @@ const DECK = [
       ['安全合規','裝置管理・資料下載刪除（個資法）'],
     ] },
 
-  { type:'module', idx:'08', kicker:'AI SERVICE', title:'AI 客服', videos:['assets/ai-support.mp4','assets/ai-support-2.mp4','assets/ai-support-3.mp4'], vidRatio:'600 / 1300', portrait:true,
+  { type:'module', idx:'08', kicker:'AI SERVICE', title:'AI 客服', videos:['assets/ai-support.mp4','assets/ai-support-2-trim.mp4','assets/ai-support-3.mp4'], vidRatio:'600 / 1300', portrait:true,
     headline:'讓客服從「回答問題」，變成「幫你成交」。',
     feats:[
       ['全站懸浮','每頁右下，不打斷瀏覽'],

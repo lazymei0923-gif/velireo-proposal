@@ -110,8 +110,9 @@ body{
 /* full-bleed photo cover */
 .slide-cover{ padding:0; }
 .cover-full{ position:absolute; inset:0; overflow:hidden; }
-.cover-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:62% center; }
-.cover-veil{ position:absolute; inset:0; background:linear-gradient(95deg, #FFFDF9 0%, #FFFDF9 30%, rgba(255,253,249,.97) 43%, rgba(255,253,249,.55) 55%, rgba(255,253,249,0) 68%); }
+.cover-photo{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:46% center; }
+.cover-veil{ position:absolute; inset:0; background:linear-gradient(95deg, #FFFDF9 0%, #FFFDF9 30%, rgba(255,253,249,.97) 43%, rgba(255,253,249,.55) 55%, rgba(255,253,249,0) 68%);
+  -webkit-mask-image:linear-gradient(to bottom, #000 80%, transparent 90%); mask-image:linear-gradient(to bottom, #000 80%, transparent 90%); }
 .cover-panel{ position:absolute; left:84px; top:50%; transform:translateY(-50%); width:min(540px,46%); }
 .cover-panel .cover-title{ font-size:clamp(36px,3.6vw,52px); line-height:1.16; }
 .cover-panel .cover-sub{ margin-top:14px; font-size:clamp(16px,1.25vw,19px); max-width:460px; }
@@ -140,8 +141,8 @@ body.on-cover .topbar, body.on-cover .hint, body.on-cover .botbar{ opacity:0; po
 .card h3{ font-family:var(--serif); font-size:23px; font-weight:700; color:var(--ink); margin:16px 0 10px; }
 .card p{ font-size:17px; line-height:1.7; color:var(--soft); }
 /* goals 左圖右卡 */
-.goals-grid{ display:grid; grid-template-columns:1.12fr 1fr; gap:40px; align-items:center; }
-.goals-vid{ width:100%; aspect-ratio:3838 / 1786; border-radius:18px; overflow:hidden; background:#000; box-shadow:0 30px 64px -40px rgba(43,43,43,.45); }
+.goals-grid{ display:grid; grid-template-columns:1.32fr 1fr; gap:44px; align-items:center; }
+.goals-vid{ width:100%; aspect-ratio:3 / 2; border-radius:18px; overflow:hidden; background:#000; box-shadow:0 30px 64px -40px rgba(43,43,43,.45); }
 .goals-vid video{ width:100%; height:100%; object-fit:cover; display:block; }
 .goals-img{ display:flex; }
 .goals-img .imgslot{ width:100%; min-height:380px; }
@@ -358,12 +359,130 @@ body.annot-mode .annot-canvas{ pointer-events:auto; cursor:crosshair; }
   .cards-3{ grid-template-columns:1fr; } .mod-grid{ grid-template-columns:1fr; gap:30px; }
   .map-grid{ grid-template-columns:repeat(2,1fr); } .flow{ grid-template-columns:repeat(3,1fr); }
 }
+
+/* ============================================================
+   P0 視覺優化（主底鎖 #FFFDF9，層次只做在 surface；跟 Codex 定案）
+   ============================================================ */
+:root{
+  --paper:#FFFFFF; --paper-warm:#FFFBF6; --paper-tint:#FBF7F1;
+  --hairline:rgba(43,43,43,.14); --hairline-soft:rgba(43,43,43,.09);
+  --shadow-1:0 1px 0 rgba(255,255,255,.9) inset, 0 18px 42px -34px rgba(43,43,43,.46);
+  --shadow-2:0 1px 0 rgba(255,255,255,.92) inset, 0 28px 70px -42px rgba(43,43,43,.52);
+  --shadow-rose:0 1px 0 rgba(255,255,255,.9) inset, 0 30px 72px -44px rgba(201,129,122,.42);
+  --media-shadow:0 1px 0 rgba(255,255,255,.75) inset, 0 34px 78px -38px rgba(43,43,43,.62);
+  --cta-ink:#A85F58;
+}
+/* 主底鎖死 #FFFDF9；glow 收淡避免整頁被染 */
+body,.slide{ background:#FFFDF9; }
+.slide::before{
+  background:
+    radial-gradient(900px 480px at 84% -12%, rgba(201,129,122,.055), transparent 62%),
+    radial-gradient(760px 460px at -8% 112%, rgba(216,197,181,.09), transparent 58%);
+}
+/* ① elevation：白面 + 雙層柔影 + hairline */
+.card,.dcard,.cmp-card,.card.row{ background:var(--paper); border:1px solid var(--hairline); box-shadow:var(--shadow-1); }
+.mapx,.c2-table{ background:var(--paper); border:1px solid var(--hairline); box-shadow:var(--shadow-2); }
+.core-bar{ border-left-width:5px; }
+/* ② map p3：白面板 + 極淡暖白斑馬 + chip 立起 */
+.slide-map .lane{ background:var(--paper); }
+.slide-map .lane:nth-child(even){ background:var(--paper-warm); }
+.slide-map .lane + .lane{ border-top:1px solid var(--hairline-soft); }
+.slide-map .lane-cat{ padding-right:18px; border-right:1px solid var(--hairline-soft); }
+.slide-map .chip{ background:#FFFFFF; border:1px solid rgba(43,43,43,.15); box-shadow:0 10px 22px -18px rgba(43,43,43,.42); }
+.slide-map .chip.demo{ background:#FFF7F4; border-color:rgba(201,129,122,.40); color:var(--cta-ink); box-shadow:0 10px 24px -20px rgba(201,129,122,.48), inset 0 0 0 1px rgba(201,129,122,.08); }
+/* ③ 媒體框：深色只在裝置內框，外圈瓷白襯環；圖庫/圖用白面 */
+.vslot.is-filled,.goals-vid.is-filled{ position:relative; background:#181514; border:1px solid rgba(43,43,43,.22); box-shadow:var(--media-shadow); }
+.vslot.is-filled::after,.goals-vid.is-filled::after{ content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none; box-shadow:inset 0 0 0 9px rgba(255,253,249,.76), inset 0 0 0 10px rgba(43,43,43,.10); }
+.cstage.is-filled,.imgslot.is-filled{ background:var(--paper); border:1px solid var(--hairline); box-shadow:var(--media-shadow); }
+/* ④ module 垂直節奏：去死白、主張→證據更緊 */
+.slide-module .inner{ justify-content:center; }
+.slide-module .inner > :nth-child(2){ margin-top:0; }
+.slide-module .inner > :last-child{ margin-bottom:0; }
+.slide-module .mod-head{ margin-bottom:22px; }
+.slide-module .mod-grid{ gap:48px; align-items:start; }
+.slide-module .ft{ padding:12px 0 12px 24px; }
+.slide-module .mod-close{ margin-top:10px; }
+/* ⑤ 8 個 module 三種律動變體（只改版面比例/順序，不用深底）*/
+.slide-module.variant-a .mod-grid{ grid-template-columns:.70fr 1.30fr; }
+.slide-module.variant-b .mod-grid{ grid-template-columns:1.30fr .70fr; }
+.slide-module.variant-b .mod-feats{ order:2; }
+.slide-module.variant-b .mod-video{ order:1; }
+.slide-module.variant-c .mod-grid{ grid-template-columns:.68fr 1.32fr; gap:50px; }
+/* 媒體最大高度保險：任何情況都不超過可用高度、不爆版 */
+.slide-module .mod-video .vslot{ max-height:652px; margin-inline:auto; }
+.slide-module.variant-c .mod-video{ transform:scale(1.02); transform-origin:center; }
+/* ⑥ compare：白 elevated 表、右欄極淡玫瑰、hairline 分列 */
+.c2-th{ background:var(--paper-warm); border-bottom:1px solid var(--hairline-soft); }
+.c2-th-r{ background:#FFF7F4; color:var(--cta-ink); }
+.c2-q{ background:var(--paper); color:rgba(43,43,43,.62); border-top:1px solid var(--hairline-soft); }
+.c2-v{ background:var(--paper-warm); color:var(--ink); font-weight:600; border-top:1px solid var(--hairline-soft); }
+.c2-hl{ background:var(--paper); border:1px solid rgba(201,129,122,.28); box-shadow:var(--shadow-rose); }
+/* ⑦ topbar/botbar 對齊內容欄軌 */
+.topbar{ left:max(88px, calc((100vw - 1200px)/2)); right:max(88px, calc((100vw - 1200px)/2)); }
+.botbar{ left:max(88px, calc((100vw - 1200px)/2)); }
+/* ⑧ overview p12 bento 白卡浮起 */
+.slide-overview .ovx-cell{ border:1px solid var(--hairline); box-shadow:var(--shadow-1); }
+.slide-overview .ovx-tile{ background:var(--paper-warm); border:1px solid var(--hairline-soft); }
+.slide-overview .ovx-count{ background:#FFF7F4; color:var(--cta-ink); }
+
+/* ============================================================
+   RESPONSIVE 舞台：固定 1600×900 + scale-to-fit（跟 Codex 定案）
+   桌機/4K 電視/投影/平板/手機橫置＝滿版；手機直式＝縮放置中＋橫置提示
+   ============================================================ */
+:root{ --stage-scale:1; --letterbox:#F3EEE6; }
+html,body{ width:100%; height:100%; overflow:hidden; }
+body{ background:
+  radial-gradient(1200px 720px at 50% 50%, rgba(255,253,249,.6), transparent 72%),
+  var(--letterbox); }
+.stage-shell{ position:fixed; inset:0; overflow:hidden; }
+.stage{
+  position:absolute; left:50%; top:50%;
+  width:1600px; height:900px;
+  transform:translate(-50%,-50%) scale(var(--stage-scale));
+  transform-origin:center center;
+  background:#FFFDF9; overflow:hidden;
+  box-shadow:0 0 0 1px rgba(43,43,43,.05), 0 40px 120px -30px rgba(43,43,43,.30);
+}
+/* deck / slide 改成舞台內絕對定位（原本 fixed 對 viewport）*/
+.deck{ position:absolute; inset:0; }
+.stage .slide{ position:absolute; padding:86px 92px 56px; }
+/* topbar/botbar/hint 改成舞台內絕對定位（覆蓋 P0 的 100vw 對齊軌）*/
+.topbar{ position:absolute; top:26px; left:200px; right:200px; }
+.wm-logo{ height:52px; width:auto; display:block; }
+.botbar{ position:absolute; left:200px; bottom:34px; }
+.hint{ position:absolute; left:50%; bottom:34px; transform:translateX(-50%); }
+/* 操作層留在 viewport：工具列不縮放；塗鴉 canvas 進舞台隨之縮放 */
+.ppt-toolbar{ position:fixed; }
+.annot-canvas{ position:absolute; inset:0; z-index:9000; touch-action:none; }
+/* 提示列首次翻頁後隱藏；⚠️每頁內容須 ≤ 1600×900，超出會被舞台 overflow:hidden 裁切 */
+body.nav-started .hint{ opacity:0; transition:opacity .6s ease; pointer-events:none; }
+/* 字級 vw→固定 px（縮放舞台裡 vw 會對到真實 viewport 而失真）*/
+.slide-title{ font-size:38px; } .slide-sub{ font-size:21px; }
+.cover-title{ font-size:62px; } .cover-sub{ font-size:24px; }
+.cover-img .imgslot{ height:500px; }
+.cover-panel .cover-title{ font-size:52px; } .cover-panel .cover-sub{ font-size:19px; }
+.mod-headline{ font-size:38px; } .ba-big{ font-size:27px; }
+.closing-big{ font-size:44px; } .closing-big2{ font-size:40px; }
+.vslot.vslot-portrait{ height:440px; }
+/* 中和舊的 viewport max-width:1100 reflow（舞台永遠 1600 寬，不該因視窗變窄而重排）*/
+.stage .cards-3{ grid-template-columns:repeat(3,1fr); }
+.stage .mod-grid{ grid-template-columns:.8fr 1.2fr; }
+.stage .flow{ grid-template-columns:repeat(6,1fr); }
+/* 手機直式：橫置提示 */
+.rotate-hint{ display:none; position:fixed; left:50%; bottom:22px; transform:translateX(-50%);
+  z-index:10000; padding:11px 18px; border-radius:999px; background:rgba(43,33,31,.88);
+  color:#fff; font-size:14px; letter-spacing:.04em; white-space:nowrap;
+  box-shadow:0 10px 30px rgba(43,43,43,.4); }
+@media (orientation:portrait) and (max-width:600px){ .rotate-hint{ display:block; } }
 </style>
 </head>
 <body>
 
+<div class="stage-shell" id="stageShell">
+<div class="stage" id="stage">
+
 <div class="topbar">
-  <div class="wordmark"><span class="wm-dot"></span>VELIREO SKIN</div>
+  <div class="wordmark"><img class="wm-logo" src="assets/logo-aibiz.png" alt="AI 創業研究室"></div>
   <div class="topbar-tag">電商平臺功能提案</div>
 </div>
 
@@ -374,6 +493,10 @@ body.annot-mode .annot-canvas{ pointer-events:auto; cursor:crosshair; }
   <div class="pageno" id="pageno">01 / 14</div>
 </div>
 <div class="hint">→／Space 翻頁 ・ 滾輪 ・ F 全螢幕 ・ D 塗鴉</div>
+
+</div><!-- /.stage -->
+</div><!-- /.stage-shell -->
+<div class="rotate-hint">↻ 請將裝置橫置，觀看完整簡報</div>
 
 <script>
 /* ============ 內容資料（要改文案，改這裡） ============ */
@@ -387,7 +510,7 @@ const DECK = [
     kicker:'WHY THIS PLATFORM',
     title:'不只是官網，而是一套會幫你賺錢的電商系統',
     sub:'從成交、出貨、會員經營到再行銷，都在同一個後台完成。',
-    video:'assets/page-overview.mp4', img:'assets/goals-scene.jpg',
+    video:'assets/page-overview-web.mp4', img:'assets/goals-scene.jpg',
     cards:[
       {num:'01', h:'賣得順｜前台轉換', p:'從逛、選、結帳到回購，每一步都為轉換優化。'},
       {num:'02', h:'出得準｜營運自動化', p:'金流 → 倉儲 → 物流 → 訂單一條龍，不靠人工接力搬資料。'},
@@ -408,7 +531,7 @@ const DECK = [
       {lyr:'F', name:'技術整合', items:[['第三方串接中心'],['多通路同步'],['API／Webhook'],['資安個資合規'],['效能 RWD／PWA']]},
     ] },
 
-  { type:'module', idx:'01', kicker:'PAYMENT', title:'金流結帳', video:'assets/payment.mp4', vidRatio:'3076 / 2048',
+  { type:'module', idx:'01', kicker:'PAYMENT', title:'金流結帳', video:'assets/payment-web.mp4', vidRatio:'1246 / 824',
     headline:'每少一次付款障礙，就多一筆成交。', close:'從付款、折扣到退款，全流程自動化，不必人工對帳。',
     feats:[
       ['多元支付','信用卡分期・行動支付・ATM・超商・貨到付款'],
@@ -420,7 +543,7 @@ const DECK = [
       ['退款防詐','線上退刷・3D 驗證・每日對帳'],
     ] },
 
-  { type:'module', idx:'02', kicker:'LOGISTICS', title:'物流配送', video:'assets/logistics.mp4', vidRatio:'2916 / 2116',
+  { type:'module', idx:'02', kicker:'LOGISTICS', title:'物流配送', video:'assets/logistics-web.mp4', vidRatio:'1246 / 898',
     headline:'下單後，系統自動安排最適合的配送流程。',
     feats:[
       ['多元配送','宅配・四大超商・店到店・自取・海外'],
@@ -432,7 +555,7 @@ const DECK = [
       ['物流報表','成本與配送效率分析'],
     ] },
 
-  { type:'module', idx:'03', kicker:'WAREHOUSE', title:'倉儲庫存 WMS', video:'assets/warehouse.mp4', vidRatio:'2916 / 2116',
+  { type:'module', idx:'03', kicker:'WAREHOUSE', title:'倉儲庫存 WMS', video:'assets/warehouse-web.mp4', vidRatio:'1246 / 898',
     headline:'少超賣、少缺貨、少積壓，就是庫存管理最大的價值。',
     feats:[
       ['即時庫存','多倉管理・安全庫存警示・補貨建議'],
@@ -444,7 +567,7 @@ const DECK = [
       ['多通路同步','官網＋蝦皮＋momo 不超賣'],
     ] },
 
-  { type:'module', idx:'04', kicker:'ORDER', title:'訂單管理 OMS', video:'assets/order.mp4', vidRatio:'2916 / 2116',
+  { type:'module', idx:'04', kicker:'ORDER', title:'訂單管理 OMS', video:'assets/order-web.mp4', vidRatio:'1246 / 898',
     headline:'每一筆訂單，都能自動往下一步走。',
     feats:[
       ['全通路彙整','官網・蝦皮・momo・實體集中'],
@@ -481,7 +604,7 @@ const DECK = [
       ['擴散 SEO','社群分享・結構化資料'],
     ] },
 
-  { type:'module', idx:'07', kicker:'MEMBER', title:'會員中心', video:'assets/member.mp4', vidRatio:'2916 / 2116',
+  { type:'module', idx:'07', kicker:'MEMBER', title:'會員中心', video:'assets/member-web.mp4', vidRatio:'1246 / 898',
     headline:'留住一位老客，比找到一位新客更便宜。',
     feats:[
       ['註冊登入','手機 OTP・Google／Apple／LINE／FB'],
@@ -600,8 +723,8 @@ function rGoals(s){
     <div class="goals-grid">
       <div class="goals-img">
         ${s.video
-          ? `<div class="goals-vid"><video class="vfill" src="${s.video}" autoplay muted loop playsinline></video></div>`
-          : `<div class="imgslot" data-img="開場情境圖">${s.img ? `<img class="ifill" src="${s.img}" alt="">` : `<div class="ico">&#128247;</div><div class="cap">情境／氛圍圖</div><div class="note">置換為品牌情境圖</div>`}</div>`}
+          ? `<div class="goals-vid is-filled"><video class="vfill" src="${s.video}" muted loop playsinline></video></div>`
+          : `<div class="imgslot${s.img?' is-filled':''}" data-img="開場情境圖">${s.img ? `<img class="ifill" src="${s.img}" alt="">` : `<div class="ico">&#128247;</div><div class="cap">情境／氛圍圖</div><div class="note">置換為品牌情境圖</div>`}</div>`}
       </div>
       <div class="goals-cards">${s.cards.map(c=>`
         <div class="card row"><div class="num">${c.num}</div><div><h3>${c.h}</h3><p>${c.p}</p></div></div>`).join('')}
@@ -646,13 +769,13 @@ function rModule(s){
   const foot  = '畫面／GIF 由 Velireo 提供，後製嵌入此處。';
   const slot = hasGal
     ? `<div class="carousel in-slot" data-int="2600">
-        <div class="cstage">${s.gallery.map((g,i)=>`<figure class="cslide${i===0?' on':''}"><img src="${g.img}" alt=""></figure>`).join('')}</div>
+        <div class="cstage is-filled">${s.gallery.map((g,i)=>`<figure class="cslide${i===0?' on':''}"><img src="${g.img}" alt=""></figure>`).join('')}</div>
         <div class="cbar"><div class="ccap">${s.gallery.map((g,i)=>`<span class="ccapt${i===0?' on':''}">${g.cap}</span>`).join('')}</div><div class="cdots">${s.gallery.map((g,i)=>`<button class="cdot${i===0?' on':''}" data-i="${i}" aria-label="${g.cap}"></button>`).join('')}</div></div>
       </div>`
     : (s.portrait && hasVid)
-    ? `<div class="phone-row phone-row-${vids.length}">${vids.map(v=>`<div class="vslot vslot-portrait" style="aspect-ratio:${s.vidRatio||'600/1300'}"><video class="vfill" src="${v}" autoplay muted loop playsinline></video></div>`).join('')}</div>`
-    : `<div class="vslot" data-module="${s.title}"${hasVid?` style="aspect-ratio:${s.vidRatio||'16/9'}"`:''}>
-        ${hasVid ? `<video class="vfill" src="${vids[0]}" autoplay muted loop playsinline></video>` : (s.img ? `<img class="vfill" src="${s.img}" alt="">` : `<div class="vslot-play">${svgIco('image')}</div><div class="vslot-cap">${cap}</div><div class="vslot-note">${note}</div>`)}
+    ? `<div class="phone-row phone-row-${vids.length}">${vids.map(v=>`<div class="vslot vslot-portrait is-filled" style="aspect-ratio:${s.vidRatio||'600/1300'}"><video class="vfill" src="${v}" muted loop playsinline></video></div>`).join('')}</div>`
+    : `<div class="vslot${(hasVid||s.img)?' is-filled':''}" data-module="${s.title}"${hasVid?` style="aspect-ratio:${s.vidRatio||'16/9'}"`:''}>
+        ${hasVid ? `<video class="vfill" src="${vids[0]}" muted loop playsinline></video>` : (s.img ? `<img class="vfill" src="${s.img}" alt="">` : `<div class="vslot-play">${svgIco('image')}</div><div class="vslot-cap">${cap}</div><div class="vslot-note">${note}</div>`)}
       </div>`;
   return `<div class="inner">
     <div class="mod-head">
@@ -673,19 +796,18 @@ function rModule(s){
   </div>`;
 }
 function rOverview(s){
-  const accent = { store:['#F7E7E3','#C0807A'], crown:['#F4EBD8','#B49A55'], trend:['#F6E6EC','#B5778F'], gear:['#ECECEA','#8A847C'] };
   return `<div class="inner">
     ${rHead(s)}
-    <div class="mapx">${s.cards.map(c=>{
-      const a = accent[c.ico] || accent.store;
-      return `<div class="lane">
-        <div class="lane-cat">
-          <span class="ovx-ico" style="background:${a[0]};color:${a[1]}">${svgIco(c.ico)}</span>
-          <div class="lane-meta"><span class="lane-name">${c.h}</span><span class="lane-count">${c.items.length} 模組</span></div>
+    <div class="ovx">${s.cards.map(c=>`
+      <div class="ovx-cell${c.wide?' wide':''}">
+        <div class="ovx-head">
+          <span class="ovx-ico">${svgIco(c.ico)}</span>
+          <span class="ovx-title">${c.h}</span>
+          <span class="ovx-count">${c.items.length} 模組</span>
         </div>
-        <div class="lane-tiles">${c.items.map(it=>`<span class="chip">${it}</span>`).join('')}</div>
-      </div>`;
-    }).join('')}</div>
+        <div class="ovx-tiles${c.wide?' cols4':''}">${c.items.map(it=>`<span class="ovx-tile">${it}</span>`).join('')}</div>
+      </div>`).join('')}
+    </div>
   </div>`;
 }
 function rCompare(s){
@@ -748,7 +870,11 @@ const RENDER = { cover:rCover, goals:rGoals, map:rMap, module:rModule, overview:
 
 /* ============ build + nav ============ */
 const deckEl = document.getElementById('deck');
-deckEl.innerHTML = DECK.map(s=>`<section class="slide slide-${s.type}">${RENDER[s.type](s)}</section>`).join('');
+let __mod = 0;
+deckEl.innerHTML = DECK.map(s=>{
+  const variant = s.type==='module' ? ' variant-'+['a','b','c'][(__mod++)%3] : '';
+  return `<section class="slide slide-${s.type}${variant}">${RENDER[s.type](s)}</section>`;
+}).join('');
 let slides = Array.from(document.querySelectorAll('.slide'));
 let current = 0;
 const TOTAL = slides.length;
@@ -769,8 +895,24 @@ function showSlide(i){
   dotEls.forEach((d,k)=>d.classList.toggle('on', k===current));
   pageno.textContent = `${pad(current+1)} / ${pad(TOTAL)}`;
   document.body.classList.toggle('on-cover', current===0);
+  if(current>0) document.body.classList.add('nav-started');
+  syncVideos();
+}
+function syncVideos(){
+  slides.forEach((sl,k)=>sl.querySelectorAll('video').forEach(v=>{
+    if(k===current){ try{ v.currentTime=0; }catch(e){} v.play().catch(()=>{}); } else { v.pause(); }
+  }));
 }
 showSlide(0);
+
+/* ---------- 舞台等比縮放：填滿任何螢幕（桌機／4K 電視／平板／手機）---------- */
+(function stageFit(){
+  const fit=()=>{ const s=Math.min(window.innerWidth/1600, window.innerHeight/900); document.documentElement.style.setProperty('--stage-scale', s); };
+  fit();
+  addEventListener('resize', fit);
+  addEventListener('orientationchange', ()=>setTimeout(fit,60));
+  document.addEventListener('fullscreenchange', ()=>setTimeout(fit,60));
+})();
 
 /* ---------- carousels (auto 輪播) ---------- */
 (function initCarousels(){
@@ -808,35 +950,35 @@ showSlide(0);
 
   const canvas = document.createElement('canvas');
   canvas.className = 'annot-canvas';
-  document.body.appendChild(canvas);
+  document.getElementById('stage').appendChild(canvas);
   const ctx = canvas.getContext('2d');
   function sizeCanvas(){
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = innerWidth*dpr; canvas.height = innerHeight*dpr;
-    canvas.style.width = innerWidth+'px'; canvas.style.height = innerHeight+'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const dpr = window.devicePixelRatio || 1; const OS = Math.max(dpr, 2);
+    canvas.width = 1600*OS; canvas.height = 900*OS;
+    canvas.style.width = '1600px'; canvas.style.height = '900px';
+    ctx.setTransform(OS,0,0,OS,0,0);
   }
   sizeCanvas();
-  addEventListener('resize', ()=>{ const snap=canvas.toDataURL(); sizeCanvas(); const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,innerWidth,innerHeight); img.src=snap; });
+  /* 塗鴉 canvas 固定舞台座標(1600×900)，隨舞台等比縮放；resize 不需重繪 */
 
   let tool='pen', color='#C9817A', annotMode=false, lockClick=false, drawing=false, startX=0, startY=0, strokes=[];
   function pushUndo(){ try{ strokes.push(canvas.toDataURL()); if(strokes.length>40) strokes.shift(); }catch(e){} }
-  function undo(){ if(!strokes.length) return; const d=strokes.pop(); const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,innerWidth,innerHeight); }; img.src=d; }
+  function undo(){ if(!strokes.length) return; const d=strokes.pop(); const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,1600,900); }; img.src=d; }
   function clearAnnot(){ strokes=[]; ctx.clearRect(0,0,canvas.width,canvas.height); }
   function setAnnotMode(on){ annotMode=!!on; document.body.classList.toggle('annot-mode',annotMode); if(!annotMode) clearAnnot(); }
   function setTool(t){ if(annotMode && tool===t){ setAnnotMode(false); tb.querySelectorAll('[data-tool]').forEach(b=>b.classList.remove('active')); return; } tool=t; tb.querySelectorAll('[data-tool]').forEach(b=>b.classList.toggle('active', b.dataset.tool===t)); setAnnotMode(true); }
   function setColor(c){ color=c; tb.querySelectorAll('.ppt-color').forEach(b=>b.classList.toggle('active', b.dataset.color===c)); }
   setColor(color);
 
-  const pos = e => { const t=e.touches?e.touches[0]:e; return {x:t.clientX,y:t.clientY}; };
-  canvas.addEventListener('pointerdown', e=>{ if(!annotMode) return; e.preventDefault(); drawing=true; pushUndo(); const p=pos(e); startX=p.x; startY=p.y;
+  const pos = e => { const t=e.touches?e.touches[0]:e; const r=canvas.getBoundingClientRect(); return { x:(t.clientX-r.left)*(1600/r.width), y:(t.clientY-r.top)*(900/r.height) }; };
+  canvas.addEventListener('pointerdown', e=>{ if(!annotMode) return; e.preventDefault(); drawing=true; try{canvas.setPointerCapture(e.pointerId);}catch(_){} pushUndo(); const p=pos(e); startX=p.x; startY=p.y;
     if(tool==='pen'||tool==='hl'){ ctx.strokeStyle=color; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.lineWidth=tool==='hl'?16:3; ctx.globalAlpha=tool==='hl'?.32:1; ctx.beginPath(); ctx.moveTo(startX,startY); } });
   canvas.addEventListener('pointermove', e=>{ if(!drawing) return; const p=pos(e);
     if(tool==='pen'||tool==='hl'){ ctx.lineTo(p.x,p.y); ctx.stroke(); }
     else if(tool==='rect'){ const d=strokes[strokes.length-1]; const draw=()=>{ ctx.strokeStyle=color; ctx.lineWidth=3; ctx.globalAlpha=1; ctx.strokeRect(startX,startY,p.x-startX,p.y-startY); };
-      if(d){ const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,innerWidth,innerHeight); draw(); }; img.src=d; } else { ctx.clearRect(0,0,canvas.width,canvas.height); draw(); } } });
+      if(d){ const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,1600,900); draw(); }; img.src=d; } else { ctx.clearRect(0,0,canvas.width,canvas.height); draw(); } } });
   const endDraw=()=>{ drawing=false; ctx.globalAlpha=1; };
-  canvas.addEventListener('pointerup', endDraw); canvas.addEventListener('pointerleave', endDraw);
+  canvas.addEventListener('pointerup', endDraw); canvas.addEventListener('pointercancel', endDraw);
 
   tb.addEventListener('click', e=>{ const b=e.target.closest('button'); if(!b) return;
     const {act,tool:t,color:c}=b.dataset;
@@ -852,7 +994,7 @@ showSlide(0);
   function toggleFull(){ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); }
 
   document.addEventListener('click', e=>{ if(lockClick||annotMode) return;
-    if(e.target.closest('a,button,input,textarea,select,video,.vslot,.carousel,.card,.dcard,.map-col,.ov-card,.annot-canvas,.ppt-toolbar,.botbar,.topbar')) return;
+    if(e.target.closest('a,button,input,textarea,select,video,.vslot,.carousel,.card,.dcard,.lane,.ovx-cell,.annot-canvas,.ppt-toolbar,.botbar,.topbar')) return;
     if(e.clientX > innerWidth/2) showSlide(current+1); else showSlide(current-1); });
 
   let wheelLock=false;

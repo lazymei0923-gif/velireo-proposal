@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>履歷健檢｜下載</title>
+<title>履歷健檢 Skill｜安裝</title>
 <style>
-  :root{--bg:#FAF8F6;--ink:#1E2733;--accent:#61796E;--muted:#6b7280;}
+  :root{--bg:#FAF8F6;--ink:#1E2733;--accent:#61796E;--muted:#5f6874;--line:#E7E2DC;--soft:#F1EEEA;}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
        font-family:"Noto Sans TC","PingFang TC","Helvetica Neue",sans-serif;
        font-size:17px;line-height:1.7;display:flex;align-items:center;
        justify-content:center;min-height:100vh;padding:24px}
-  .card{max-width:560px;width:100%;background:#fff;border-radius:16px;
+  .card{max-width:600px;width:100%;background:#fff;border-radius:16px;
         padding:48px 40px;box-shadow:0 1px 2px rgba(0,0,0,.06)}
   h1{font-size:25px;margin:0 0 8px;letter-spacing:.01em}
   p.sub{margin:0 0 32px;color:var(--muted);font-size:16px}
@@ -20,32 +20,42 @@
         font-weight:600;font-size:17px;transition:opacity .15s ease-out}
   a.btn:hover{opacity:.88}
   a:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
-  ol{margin:32px 0 0;padding-left:20px}
+  h2{font-size:17px;margin:32px 0 12px;padding-top:24px;border-top:1px solid var(--line)}
+  ol{margin:0;padding-left:22px}
   li{margin-bottom:12px}
   li a{display:inline-block;padding:4px 0;min-height:32px;line-height:24px}
-  code{background:#F1EEEA;padding:2px 8px;border-radius:8px;font-size:15px}
-  .q{background:#F1EEEA;border-radius:12px;padding:16px 20px;margin-top:8px;
-     font-size:16px}
-  footer{margin-top:32px;font-size:14px;color:var(--muted)}
+  .q{background:var(--soft);border-radius:12px;padding:16px 20px;margin-top:8px;font-size:16px}
+  .note{color:var(--muted);font-size:15px;margin-top:8px}
+  footer{margin-top:32px;padding-top:24px;border-top:1px solid var(--line);
+         font-size:14px;color:var(--muted)}
   @media (max-width:640px){.card{padding:32px 24px}h1{font-size:20px}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="card">
-  <h1>🩺 履歷健檢</h1>
-  <p class="sub">用前 Google 招募官的六個判準，逐條幫你的履歷打分。</p>
+  <h1>🩺 履歷健檢 Skill</h1>
+  <p class="sub">用前 Google 招募官的六個判準，逐條幫你的履歷打分。裝一次，之後說一句「幫我看履歷」就會自己跑。</p>
 
-  <a class="btn" href="resume-checkup.md" download="履歷健檢-單檔版.md">⬇️ 下載檔案</a>
+  <a class="btn" href="resume-checkup-v1.zip" download>⬇️ 下載 Skill（zip）</a>
 
+  <h2>裝進 Claude（全程在網頁上點，約 1 分鐘）</h2>
   <ol>
-    <li>下載上面這個檔</li>
-    <li>到 <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> 開一個<strong>新對話</strong></li>
-    <li>把這個檔拖進對話框，連同你的履歷（PDF、Word、截圖都行）</li>
-    <li>貼這句話送出：
-      <div class="q">照這份文件的流程幫我做履歷健檢，我的履歷在這裡。</div>
+    <li>先到 <a href="https://claude.ai/settings/capabilities" target="_blank" rel="noopener">設定 › Capabilities</a>，把「Code execution and file creation」打開<div class="note">不開的話下一步會找不到上傳按鈕</div></li>
+    <li>打開 <a href="https://claude.ai/customize/skills" target="_blank" rel="noopener">Customize › Skills</a></li>
+    <li>點 <strong>＋</strong> → <strong>Create skill</strong> → <strong>Upload a skill</strong>，把剛下載的 zip 丟上去</li>
+  </ol>
+  <p class="note">免費版也可以裝（Free／Pro／Max／Team／Enterprise 都支援）。</p>
+
+  <h2>怎麼用</h2>
+  <ol>
+    <li>開一個新對話，把你的履歷丟進去（PDF、Word、純文字、截圖都行）</li>
+    <li>跟它說：
+      <div class="q">幫我看履歷</div>
     </li>
   </ol>
+  <p class="note">有鎖定職缺的話，把職缺說明一起貼上，準確度差很多。<br>
+  想直接改 104 就說「幫我改 104 履歷」——它會每一欄都先問過你才動。</p>
 
   <footer>
     方法論出處：前 Google 招募官 Farah Sharghi〈6 Résumé Secrets That Get You Hired〉<br>

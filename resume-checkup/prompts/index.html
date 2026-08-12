@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>履歷健檢 Skill｜提示詞一鍵複製</title>
+<style>
+  :root{--bg:#FAF8F6;--ink:#1E2733;--accent:#61796E;--muted:#5f6874;--card:#fff;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);padding:16px;
+       font-family:"Noto Sans TC","PingFang TC","Helvetica Neue",sans-serif;font-size:16px;line-height:1.6}
+  .item{background:var(--card);border:1px solid #E8E4DF;border-radius:12px;padding:16px;margin-bottom:12px;
+        box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .item:last-child{margin-bottom:0}
+  .label{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:8px}
+  .row{display:flex;gap:12px;align-items:flex-start}
+  .txt{flex:1;white-space:pre-wrap;word-break:break-word;font-size:16px}
+  button{flex-shrink:0;background:var(--accent);color:#fff;border:0;border-radius:8px;
+         padding:10px 16px;font-size:15px;font-weight:600;cursor:pointer;min-height:44px;min-width:64px;
+         font-family:inherit;transition:opacity .15s ease-out}
+  button:hover{opacity:.88}
+  button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  button.ok{background:#2E7D4F}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="item">
+    <div class="label">① 最常用</div>
+    <div class="row"><div class="txt" id="p1">用 resume-checkup 幫我看履歷</div>
+    <button data-t="p1">複製</button></div>
+  </div>
+  <div class="item">
+    <div class="label">② 有鎖定職缺（推薦，準確度差很多）</div>
+    <div class="row"><div class="txt" id="p2">用 resume-checkup 幫我看履歷，這是我想投的職缺：
+〈把職缺說明貼在這裡〉</div>
+    <button data-t="p2">複製</button></div>
+  </div>
+  <div class="item">
+    <div class="label">③ 想直接改 104</div>
+    <div class="row"><div class="txt" id="p3">用 resume-checkup 幫我改 104 履歷</div>
+    <button data-t="p3">複製</button></div>
+  </div>
+<script>
+document.querySelectorAll('button').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=document.getElementById(b.dataset.t).textContent;
+    function done(){b.textContent='已複製 ✓';b.classList.add('ok');
+      setTimeout(function(){b.textContent='複製';b.classList.remove('ok');},1600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(done).catch(function(){fallback();});
+    }else{fallback();}
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);
+      ta.select();try{document.execCommand('copy');done();}catch(e){alert('請長按文字自行複製');}
+      document.body.removeChild(ta);}
+  });
+});
+</script>
+</body>
+</html>

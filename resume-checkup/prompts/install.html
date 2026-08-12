@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>履歷健檢 Skill｜安裝指令一鍵複製</title>
+<style>
+  :root{--bg:#FAF8F6;--ink:#1E2733;--accent:#61796E;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);padding:16px;
+       font-family:"Noto Sans TC","PingFang TC","Helvetica Neue",sans-serif;font-size:16px;line-height:1.6}
+  .item{background:#fff;border:1px solid #E8E4DF;border-radius:12px;padding:16px;
+        box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .row{display:flex;gap:12px;align-items:flex-start}
+  .txt{flex:1;white-space:pre-wrap;word-break:break-word}
+  button{flex-shrink:0;background:var(--accent);color:#fff;border:0;border-radius:8px;
+         padding:10px 16px;font-size:15px;font-weight:600;cursor:pointer;min-height:44px;min-width:64px;
+         font-family:inherit;transition:opacity .15s ease-out}
+  button:hover{opacity:.88}
+  button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+  button.ok{background:#2E7D4F}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+  <div class="item">
+    <div class="row"><div class="txt" id="p1">把這個 zip 存成我的 skill，之後我要用 resume-checkup 幫我看履歷</div>
+    <button data-t="p1">複製</button></div>
+  </div>
+<script>
+document.querySelectorAll('button').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=document.getElementById(b.dataset.t).textContent;
+    function done(){b.textContent='已複製 ✓';b.classList.add('ok');
+      setTimeout(function(){b.textContent='複製';b.classList.remove('ok');},1600);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(t).then(done).catch(function(){fallback();});
+    }else{fallback();}
+    function fallback(){
+      var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);
+      ta.select();try{document.execCommand('copy');done();}catch(e){alert('請長按文字自行複製');}
+      document.body.removeChild(ta);}
+  });
+});
+</script>
+</body>
+</html>
